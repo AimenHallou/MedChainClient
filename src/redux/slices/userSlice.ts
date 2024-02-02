@@ -12,11 +12,13 @@ export type User = {
 export interface UsersState {
     user?: User;
     error?: string;
+    response?: string;
 }
 
 const initialState: UsersState = {
     user: undefined,
     error: '',
+    response: '',
 };
 
 interface AuthPayload {
@@ -88,14 +90,14 @@ export const getMe = createAsyncThunk('users/me', async (_, { rejectWithValue })
 export const updateDetails = createAsyncThunk('users/updateDetails', async (payload: UpdatePayload, { rejectWithValue }) => {
     try {
         const response = await api({
-            method: 'GET',
+            method: 'PATCH',
             url: '/api/v1/users/updateDetails',
             data: payload,
         });
 
         return response.data.user;
     } catch (error: any) {
-        console.error(error.response.data.message);
+        console.error(error.response?.data?.message);
         return rejectWithValue(error.response.data.message);
     }
 });
@@ -103,7 +105,7 @@ export const updateDetails = createAsyncThunk('users/updateDetails', async (payl
 export const linkAddress = createAsyncThunk('users/linkAddress', async (address: string, { rejectWithValue }) => {
     try {
         const response = await api({
-            method: 'GET',
+            method: 'POST',
             url: '/api/v1/users/linkAddress',
             data: { address },
         });
@@ -115,12 +117,11 @@ export const linkAddress = createAsyncThunk('users/linkAddress', async (address:
     }
 });
 
-export const unlinkAddress = createAsyncThunk('users/unlinkAddress', async (address: string, { rejectWithValue }) => {
+export const unlinkAddress = createAsyncThunk('users/unlinkAddress', async (_, { rejectWithValue }) => {
     try {
         const response = await api({
-            method: 'GET',
+            method: 'POST',
             url: '/api/v1/users/unlinkAddress',
-            data: { address },
         });
 
         return response.data.user;
@@ -140,6 +141,7 @@ const userSlice = createSlice({
         },
         setAuthError: (state, action) => {
             state.error = action.payload;
+            state.response = '';
         },
     },
     extraReducers: (builder) => {
@@ -159,7 +161,11 @@ const userSlice = createSlice({
             state.user = action.payload;
         });
         builder.addCase(updateDetails.fulfilled, (state, action) => {
+            state.response = 'Profile updated successfully';
             state.user = action.payload;
+        });
+        builder.addCase(updateDetails.rejected, (state, action) => {
+            state.error = (action.payload as string) || '';
         });
         builder.addCase(linkAddress.fulfilled, (state, action) => {
             state.user = action.payload;
