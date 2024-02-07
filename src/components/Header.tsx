@@ -5,21 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { AppDispatch } from '../redux/store';
 import { Button } from './ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from './ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 
 const Header = () => {
     const dispatch = useDispatch<AppDispatch>();
     const user = useSelector((state: RootState) => state.auth.user);
 
     return (
-        <header className='flex justify-between items-center px-20 py-4 transition-all duration-200 border-b-2 border-gray-700'>
+        <header className='flex justify-between items-center px-20 py-4 transition-all duration-200 border-b'>
             <nav className='flex'>
                 <Link to='/'>
                     <img src='logo.png' alt='Logo' className='h-12 mr-3' />
@@ -29,7 +22,7 @@ const Header = () => {
                 {user ? (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button>{user.username}</Button>
+                            <Button variant={'secondary'}>{user.username}</Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className='w-56'>
                             <DropdownMenuGroup>
@@ -49,7 +42,7 @@ const Header = () => {
                     </DropdownMenu>
                 ) : (
                     <Link to='/auth'>
-                        <Button>Login</Button>
+                        <Button variant={'secondary'}>Login</Button>
                     </Link>
                 )}
                 <Link className='flex items-center' to='/settings'>

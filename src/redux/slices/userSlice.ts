@@ -36,7 +36,7 @@ export const register = createAsyncThunk('users/register', async (payload: AuthP
     try {
         const response = await api({
             method: 'POST',
-            url: '/api/v1/users/register',
+            url: '/users/register',
             data: payload,
         });
 
@@ -55,7 +55,7 @@ export const login = createAsyncThunk('users/login', async (payload: AuthPayload
     try {
         const response = await api({
             method: 'POST',
-            url: '/api/v1/users/login',
+            url: '/users/login',
             data: payload,
         });
 
@@ -77,7 +77,7 @@ export const getMe = createAsyncThunk('users/me', async (_, { rejectWithValue })
 
         const response = await api({
             method: 'GET',
-            url: '/api/v1/users/me',
+            url: '/users/me',
         });
 
         return response.data.user;
@@ -91,7 +91,7 @@ export const updateDetails = createAsyncThunk('users/updateDetails', async (payl
     try {
         const response = await api({
             method: 'PATCH',
-            url: '/api/v1/users/updateDetails',
+            url: '/users/updateDetails',
             data: payload,
         });
 
@@ -106,7 +106,7 @@ export const linkAddress = createAsyncThunk('users/linkAddress', async (address:
     try {
         const response = await api({
             method: 'POST',
-            url: '/api/v1/users/linkAddress',
+            url: '/users/linkAddress',
             data: { address },
         });
 
@@ -121,7 +121,7 @@ export const unlinkAddress = createAsyncThunk('users/unlinkAddress', async (_, {
     try {
         const response = await api({
             method: 'POST',
-            url: '/api/v1/users/unlinkAddress',
+            url: '/users/unlinkAddress',
         });
 
         return response.data.user;
