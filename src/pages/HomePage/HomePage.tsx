@@ -1,4 +1,4 @@
-import { addPatientFormSchema, createPatient, getPatientCount, getPatients, getRecentPatients } from '@/api';
+import { addPatientFormSchema, createPatient, getPatientCount, getPatients } from '@/api';
 import PatientCard from '@/components/PatientCard/PatientCard';
 import PatientCardSkeleton from '@/components/PatientCard/PatientCardSkeleton';
 import { Button } from '@/components/ui/button';
@@ -11,14 +11,15 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { FileData } from '@/types/file';
-import { shortenAddress } from '@/utils/shortenAddress';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FaRegChartBar, FaUser, FaUserInjured } from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
+import PatientSummary from './PatientSummary';
+import RecentPatients from './RecentPatients';
 
 const dataTypes = ['Lab results', 'Medical images', 'Medication history', 'Clinician notes'];
 
@@ -31,11 +32,8 @@ const HomePage = () => {
         queryKey: ['patients', pagination.page],
         queryFn: () => getPatients(pagination.page, pagination.limit),
     });
+
     const { data: patientCount } = useQuery({ queryKey: ['patientCount'], queryFn: getPatientCount });
-    const { data: recentPatients } = useQuery({
-        queryKey: ['recentPatients'],
-        queryFn: () => getRecentPatients(3),
-    });
 
     const [addPatientDialogOpen, setAddPatientDialogOpen] = useState(false);
 
@@ -112,43 +110,9 @@ const HomePage = () => {
         <div className='flex-grow h-full'>
             <div className='max-w-[90rem] mx-auto grid grid-cols-1 lg:grid-cols-10 gap-4 mt-8'>
                 <div className='col-span-2 gap-4'>
-                    <Card>
-                        <CardHeader>
-                            <div className='flex space-x-2 items-center'>
-                                <CardTitle className='text-xl'>Patient Summary</CardTitle>
-                                <FaUserInjured size={20} />
-                            </div>
-                        </CardHeader>
-                        <CardContent className='grid gap-4'>
-                            <p className='text-sm font-semibold text-sub-text'>Total Patients: {patientCount}</p>
-                        </CardContent>
-                    </Card>
-                    <Card className='mt-4'>
-                        <CardHeader>
-                            <div className='flex space-x-2 items-center'>
-                                <CardTitle className='text-xl'>Recent Patients</CardTitle>
-                                <FaRegChartBar size={20} />
-                            </div>
-                        </CardHeader>
+                    <PatientSummary />
 
-                        <CardContent className='grid grid-cols-1 gap-5'>
-                            {recentPatients?.map((patient) => {
-                                return (
-                                    <Card key={patient.patient_id} className='bg-secondary cursor-pointer hover:scale-105 transition-all'>
-                                        <CardHeader>
-                                            <div className='flex justify-between items-center gap-x-5'>
-                                                <div className='grid gap-3'>
-                                                    <CardTitle>{patient.patient_id}</CardTitle>
-                                                    <p className='text-sm'>Owner: {shortenAddress(patient.owner)}</p>
-                                                    <p className='text-xs text-muted-foreground'>{new Date(patient.createdAt).toUTCString()}</p>
-                                                </div>
-                                            </div>
-                                        </CardHeader>
-                                    </Card>
-                                );
-                            })}
-                        </CardContent>
-                    </Card>
+                    <RecentPatients className='mt-4'/>
                 </div>
                 <div className='col-span-8'>
                     <Card>

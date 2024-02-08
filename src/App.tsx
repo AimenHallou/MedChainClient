@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Footer from './components/Footer';
 import Header from './components/Header';
-import HomePage from './pages/HomePage';
+import HomePage from './pages/HomePage/HomePage';
 import { checkConnection } from './redux/slices/blockchainSlice';
 import { AppDispatch } from './redux/store';
 import AccountPage from './pages/AccountPage';
