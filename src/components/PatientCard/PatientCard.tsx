@@ -1,7 +1,7 @@
 import { IPatient } from '@/types/patient';
 import { shortenAddress } from '@/utils/shortenAddress';
 import { BsFillFilePersonFill } from 'react-icons/bs';
-import { Card, CardHeader, CardTitle } from './ui/card';
+import { Card, CardHeader, CardTitle } from '../ui/card';
 
 interface Props {
     patient: IPatient;

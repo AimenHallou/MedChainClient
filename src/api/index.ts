@@ -35,17 +35,18 @@ export const getBearerToken = () => {
     return api.defaults.headers.common;
 };
 
-export const getPatients = async () => {
-    return api.get('/patients').then((res) => res.data.patients as IPatient[]);
+export const getPatients = async (page = 1, limit = 15) => {
+    await new Promise((r) => setTimeout(r, 300));
+    return api.get('/patients', { params: { page, limit } }).then((res) => res.data.patients as IPatient[]);
 };
 
 export const getPatientCount = async () => {
     return api.get('/patients/count').then((res) => res.data.count as number);
 };
 
-export const getRecentPatients = async () => {
+export const getRecentPatients = async (number = 3) => {
     return api
-        .get(`/patients/recent/3`)
+        .get(`/patients/recent/${number}`)
         .then((res) => res.data.patients as IPatient[])
         .catch((err) => {
             console.error(err);

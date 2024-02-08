@@ -1,11 +1,13 @@
 import { addPatientFormSchema, createPatient, getPatientCount, getPatients, getRecentPatients } from '@/api';
-import PatientCard from '@/components/PatientCard';
+import PatientCard from '@/components/PatientCard/PatientCard';
+import PatientCardSkeleton from '@/components/PatientCard/PatientCardSkeleton';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { FileData } from '@/types/file';
@@ -23,11 +25,16 @@ const dataTypes = ['Lab results', 'Medical images', 'Medication history', 'Clini
 const HomePage = () => {
     const queryClient = useQueryClient();
 
-    const { data } = useQuery({ queryKey: ['patients'], queryFn: getPatients });
+    const [pagination, setPagination] = useState({ page: 0, limit: 15 });
+
+    const { data, isLoading: patientIsLoading } = useQuery({
+        queryKey: ['patients', pagination.page],
+        queryFn: () => getPatients(pagination.page, pagination.limit),
+    });
     const { data: patientCount } = useQuery({ queryKey: ['patientCount'], queryFn: getPatientCount });
     const { data: recentPatients } = useQuery({
         queryKey: ['recentPatients'],
-        queryFn: getRecentPatients,
+        queryFn: () => getRecentPatients(3),
     });
 
     const [addPatientDialogOpen, setAddPatientDialogOpen] = useState(false);
@@ -102,8 +109,8 @@ const HomePage = () => {
     };
 
     return (
-        <div className='flex-grow'>
-            <div className='max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-10 gap-6 mt-8'>
+        <div className='flex-grow h-full'>
+            <div className='max-w-[90rem] mx-auto grid grid-cols-1 lg:grid-cols-10 gap-4 mt-8'>
                 <div className='col-span-2 gap-4'>
                     <Card>
                         <CardHeader>
@@ -116,7 +123,7 @@ const HomePage = () => {
                             <p className='text-sm font-semibold text-sub-text'>Total Patients: {patientCount}</p>
                         </CardContent>
                     </Card>
-                    <Card className='mt-5'>
+                    <Card className='mt-4'>
                         <CardHeader>
                             <div className='flex space-x-2 items-center'>
                                 <CardTitle className='text-xl'>Recent Patients</CardTitle>
@@ -271,10 +278,51 @@ const HomePage = () => {
                                 </Dialog>
                             </div>
                         </CardHeader>
-                        <CardContent className='grid grid-cols-3 gap-5'>
-                            {data?.map((patient) => {
-                                return <PatientCard key={patient.patient_id} patient={patient} />;
-                            })}
+                        <CardContent className='grid gap-4'>
+                            <div className='grid grid-cols-3 gap-5'>
+                                {patientIsLoading && Array.from({ length: 6 }).map((_, i) => <PatientCardSkeleton key={i} />)}
+
+                                {data?.map((patient) => {
+                                    return <PatientCard key={patient.patient_id} patient={patient} />;
+                                })}
+                            </div>
+
+                            <Pagination>
+                                <PaginationContent>
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            className='cursor-pointer select-none'
+                                            onClick={() => {
+                                                if (pagination.page > 0) {
+                                                    setPagination((prev) => ({ ...prev, page: prev.page - 1 }));
+                                                }
+                                            }}
+                                        />
+                                    </PaginationItem>
+                                    {Array.from({ length: Math.ceil(patientCount! / pagination.limit) }).map((_, i) => (
+                                        <PaginationItem key={i}>
+                                            <PaginationLink
+                                                className={cn('select-none cursor-pointer', pagination.page === i && 'bg-secondary text-white')}
+                                                onClick={() => {
+                                                    setPagination((prev) => ({ ...prev, page: i }));
+                                                }}>
+                                                {i + 1}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    ))}
+
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            className='cursor-pointer select-none'
+                                            onClick={() => {
+                                                if (pagination.page < Math.floor(patientCount! / pagination.limit)) {
+                                                    setPagination((prev) => ({ ...prev, page: prev.page + 1 }));
+                                                }
+                                            }}
+                                        />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
                         </CardContent>
                     </Card>
                 </div>
