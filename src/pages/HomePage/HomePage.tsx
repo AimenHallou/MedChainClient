@@ -112,7 +112,7 @@ const HomePage = () => {
                 <div className='col-span-2 gap-4'>
                     <PatientSummary />
 
-                    <RecentPatients className='mt-4'/>
+                    <RecentPatients className='mt-4' />
                 </div>
                 <div className='col-span-8'>
                     <Card>
@@ -123,7 +123,7 @@ const HomePage = () => {
                                     <FaUser size={18} className='hover:text-gray-400 transition-colors duration-200' />
                                 </div>
 
-                                <Dialog open={addPatientDialogOpen}>
+                                <Dialog open={addPatientDialogOpen} onOpenChange={setAddPatientDialogOpen}>
                                     <DialogTrigger asChild>
                                         <Button
                                             onClick={() => {
