@@ -21,7 +21,7 @@ function App() {
     }, [dispatch]);
 
     return (
-        <div className='min-h-screen bg-background text-foreground flex flex-col pb-20'>
+        <div className='min-h-screen bg-background text-foreground flex flex-col'>
             <Header />
 
             <Routes location={location} key={location.pathname}>

@@ -14,7 +14,7 @@ import { FileData } from '@/types/file';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { FaUser } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
@@ -43,9 +43,12 @@ const HomePage = () => {
             patient_id: '',
             content: [],
         },
+        reValidateMode: 'onChange',
     });
-
-    const filesData = addPatientForm.watch('content');
+    const addPatientFormContentFields = useFieldArray({
+        control: addPatientForm.control,
+        name: 'content',
+    });
 
     const onSubmit = (values: z.infer<typeof addPatientFormSchema>) => {
         addPatientMutation.mutate(values);
@@ -82,6 +85,7 @@ const HomePage = () => {
                             ipfsCID: ipfsCID,
                         });
                         if (fileContents.length === files.length) {
+                            addPatientForm.clearErrors('content');
                             addPatientForm.setValue('content', fileContents);
                         }
                     } else {
@@ -91,19 +95,6 @@ const HomePage = () => {
                 reader.readAsDataURL(file);
             });
         }
-    };
-
-    const handleDataTypeChange = (index: number, dataType: string) => {
-        console.log(filesData);
-
-        const updatedFilesData = filesData.map((file, idx) => {
-            if (idx === index) {
-                return { ...file, dataType: dataType };
-            }
-            return file;
-        });
-
-        addPatientForm.setValue('content', updatedFilesData);
     };
 
     return (
@@ -157,7 +148,7 @@ const HomePage = () => {
                                                 <FormField
                                                     control={addPatientForm.control}
                                                     name='content'
-                                                    render={({ field }) => (
+                                                    render={() => (
                                                         <>
                                                             <FormItem>
                                                                 <Label>Content</Label>
@@ -166,33 +157,52 @@ const HomePage = () => {
                                                                 </FormControl>
                                                             </FormItem>
 
-                                                            {field.value.length > 0 && (
+                                                            {addPatientFormContentFields.fields.length > 0 && (
                                                                 <FormItem>
                                                                     <Label>Content Data Types</Label>
                                                                     <FormControl>
                                                                         <div className='gap-3 grid'>
-                                                                            {field.value.map((fileData, index) => (
-                                                                                <div key={fileData.name} className='flex justify-between'>
-                                                                                    <p className='font-light'>{fileData.name}</p>
-                                                                                    <div className='flex flex-col items-center'>
-                                                                                        <Select onValueChange={(e) => handleDataTypeChange(index, e)}>
-                                                                                            <SelectTrigger
-                                                                                                className={cn(
-                                                                                                    'w-[180px]',
-                                                                                                    addPatientForm.formState.errors.content?.[index]
-                                                                                                        ?.dataType && 'border-red-500 border-2'
+                                                                            {addPatientFormContentFields.fields.map((field, index) => (
+                                                                                <div key={field.id} className='flex justify-between gap-x-4'>
+                                                                                    <FormItem>
+                                                                                        <Label>File Name</Label>
+                                                                                        <FormControl>
+                                                                                            <Input
+                                                                                                placeholder=''
+                                                                                                {...addPatientForm.register(`content.${index}.name` as const)}
+                                                                                                type='text'
+                                                                                            />
+                                                                                        </FormControl>
+                                                                                    </FormItem>
+
+                                                                                    <FormItem>
+                                                                                        <Label>Data Type</Label>
+                                                                                        <FormControl>
+                                                                                            <Select
+                                                                                                onValueChange={(value) => {
+                                                                                                    addPatientForm.setValue(`content.${index}.dataType`, value);
+                                                                                                }}
+                                                                                                {...addPatientForm.register(
+                                                                                                    `content.${index}.dataType` as const
                                                                                                 )}>
-                                                                                                <SelectValue placeholder='Select Data Type' />
-                                                                                            </SelectTrigger>
-                                                                                            <SelectContent>
-                                                                                                {dataTypes.map((dataType) => (
-                                                                                                    <SelectItem key={dataType} value={dataType}>
-                                                                                                        {dataType}
-                                                                                                    </SelectItem>
-                                                                                                ))}
-                                                                                            </SelectContent>
-                                                                                        </Select>
-                                                                                    </div>
+                                                                                                <SelectTrigger
+                                                                                                    className={cn(
+                                                                                                        'w-[180px]',
+                                                                                                        addPatientForm.formState.errors.content?.[index]
+                                                                                                            ?.dataType && 'border-red-500 border-2'
+                                                                                                    )}>
+                                                                                                    <SelectValue placeholder='Select Data Type' />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent>
+                                                                                                    {dataTypes.map((dataType) => (
+                                                                                                        <SelectItem key={dataType} value={dataType}>
+                                                                                                            {dataType}
+                                                                                                        </SelectItem>
+                                                                                                    ))}
+                                                                                                </SelectContent>
+                                                                                            </Select>
+                                                                                        </FormControl>
+                                                                                    </FormItem>
                                                                                 </div>
                                                                             ))}
                                                                         </div>
