@@ -1,7 +1,11 @@
 import { AppDispatch, RootState } from '@/redux/store';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,10 +15,15 @@ import { Label } from '@/components/ui/label';
 import { connect } from '@/redux/slices/blockchainSlice';
 import { linkAddress, setAuthError, unlinkAddress, updateDetails } from '@/redux/slices/userSlice';
 import { shortenAddress } from '@/utils/shortenAddress';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
-const AccountPage = () => {
+export const Route = createFileRoute('/account')({
+    component: Account,
+    onEnter: () => {
+        document.title = 'Account | MedChain';
+    },
+});
+
+function Account() {
     const blockchain = useSelector((state: RootState) => state.blockchain);
     const address = useSelector((state: RootState) => state.auth.user?.address);
     const dispatch = useDispatch<AppDispatch>();
@@ -90,7 +99,7 @@ const AccountPage = () => {
             </div>
         </div>
     );
-};
+}
 
 const editProfileFormSchema = z.object({
     name: z.string(),
@@ -211,5 +220,3 @@ const EditProfileForm = ({ ...props }: EditProfileFormProps) => {
         </div>
     );
 };
-
-export default AccountPage;

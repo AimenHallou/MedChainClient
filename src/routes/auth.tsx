@@ -1,4 +1,5 @@
 import { AppDispatch, RootState } from '@/redux/store';
+import { Link, createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -12,7 +13,13 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { login, logout, register, setAuthError } from '@/redux/slices/userSlice';
-import { Link } from 'react-router-dom';
+
+export const Route = createFileRoute('/auth')({
+    component: Auth,
+    onEnter: () => {
+        document.title = 'Auth | MedChain';
+    },
+});
 
 const signUpFormSchema = z
     .object({
@@ -40,7 +47,7 @@ const loginFormSchema = z.object({
     }),
 });
 
-export const AuthPage = () => {
+function Auth() {
     const user = useSelector((state: RootState) => state.auth.user);
     const dispatch = useDispatch<AppDispatch>();
     const [isRegistering, setIsRegistering] = useState(false);
@@ -82,7 +89,7 @@ export const AuthPage = () => {
             </div>
         </div>
     );
-};
+}
 
 interface SignUpFormProps {
     switchRegistrationMode: () => void;

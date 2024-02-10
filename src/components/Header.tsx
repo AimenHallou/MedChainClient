@@ -2,10 +2,10 @@ import { logout } from '@/redux/slices/userSlice';
 import { RootState } from '@/redux/store';
 import { MdSettings } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { AppDispatch } from '../redux/store';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { Link } from '@tanstack/react-router';
 
 const Header = () => {
     const dispatch = useDispatch<AppDispatch>();

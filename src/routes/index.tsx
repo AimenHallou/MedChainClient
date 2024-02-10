@@ -1,3 +1,4 @@
+import { createFileRoute } from '@tanstack/react-router';
 import { addPatientFormSchema, createPatient, getPatientCount, getPatients } from '@/api';
 import PatientCard from '@/components/PatientCard/PatientCard';
 import PatientCardSkeleton from '@/components/PatientCard/PatientCardSkeleton';
@@ -18,12 +19,19 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { FaUser } from 'react-icons/fa';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
-import PatientSummary from './PatientSummary';
-import RecentPatients from './RecentPatients';
+import PatientSummary from '../components/PatientSummary';
+import RecentPatients from '../components/RecentPatients';
+
+export const Route = createFileRoute('/')({
+    component: Index,
+    onEnter: () => {
+        document.title = 'Home | MedChain';
+    },
+});
 
 const dataTypes = ['Lab results', 'Medical images', 'Medication history', 'Clinician notes'];
 
-const HomePage = () => {
+function Index() {
     const queryClient = useQueryClient();
 
     const [pagination, setPagination] = useState({ page: 0, limit: 15 });
@@ -303,6 +311,4 @@ const HomePage = () => {
             </div>
         </div>
     );
-};
-
-export default HomePage;
+}
