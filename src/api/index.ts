@@ -35,9 +35,9 @@ export const getBearerToken = () => {
     return api.defaults.headers.common;
 };
 
-export const getPatients = async (page = 1, limit = 15, filter: string | null = null) => {
+export const getPatients = async (page = 1, limit = 15, filter: string | null = null, sortBy: string | null = null, sortOrder: string | null = null) => {
     await new Promise((r) => setTimeout(r, 300));
-    return api.get('/patients', { params: { page, limit, filter } }).then((res) => {
+    return api.get('/patients', { params: { page, limit, filter, sortBy, sortOrder } }).then((res) => {
         return {
             patients: res.data.patients as IPatient[],
             totalCount: res.data.totalCount as number,

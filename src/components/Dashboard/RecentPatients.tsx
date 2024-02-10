@@ -21,15 +21,15 @@ const RecentPatients = ({ ...rest }: Props) => {
                 </div>
             </CardHeader>
 
-            <CardContent className='grid grid-cols-1 gap-5'>
+            <CardContent className='grid grid-cols-1 gap-3'>
                 {recentPatients?.map((patient) => {
                     return (
                         <Card key={patient.patient_id} className='bg-secondary cursor-pointer hover:scale-105 transition-all'>
                             <CardHeader>
                                 <div className='flex justify-between items-center gap-x-5'>
-                                    <div className='grid gap-3'>
+                                    <div className='grid gap-2'>
                                         <CardTitle>{patient.patient_id}</CardTitle>
-                                        <p className='text-sm'>Owner: {shortenAddress(patient.owner)}</p>
+                                        <p className='text-xs'>Owner: {shortenAddress(patient.owner)}</p>
                                         <p className='text-xs text-muted-foreground'>{new Date(patient.createdAt).toUTCString()}</p>
                                     </div>
                                 </div>
