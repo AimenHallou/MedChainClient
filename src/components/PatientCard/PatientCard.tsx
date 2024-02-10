@@ -20,7 +20,7 @@ const PatientCard = ({ patient }: Props) => {
                     <div className='grid gap-2'>
                         <CardTitle>{patient.patient_id}</CardTitle>
                         <p className='text-xs'>Owner: {shortenAddress(patient.owner)}</p>
-                        <p className='text-xs text-muted-foreground'>{new Date(patient.createdAt).toUTCString()}</p>
+                        <p className='text-xs text-muted-foreground'>{new Date(patient.createdAt).toLocaleString()}</p>
                     </div>
                     <BsFillFilePersonFill className='text-blue-500 h-12 w-12 flex-shrink-0' />
                 </div>

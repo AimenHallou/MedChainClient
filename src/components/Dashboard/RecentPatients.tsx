@@ -30,7 +30,7 @@ const RecentPatients = ({ ...rest }: Props) => {
                                     <div className='grid gap-2'>
                                         <CardTitle>{patient.patient_id}</CardTitle>
                                         <p className='text-xs'>Owner: {shortenAddress(patient.owner)}</p>
-                                        <p className='text-xs text-muted-foreground'>{new Date(patient.createdAt).toUTCString()}</p>
+                                        <p className='text-xs text-muted-foreground'>{new Date(patient.createdAt).toLocaleString()}</p>
                                     </div>
                                 </div>
                             </CardHeader>

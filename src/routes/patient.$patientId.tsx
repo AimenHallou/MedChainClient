@@ -128,7 +128,7 @@ function PatientComponent() {
                                     <p className='text-sm'>{patient.patient_id}</p>
                                 </div>
 
-                                <p className='text-sm text-muted-foreground'>Created on {new Date(patient.createdAt).toISOString()}</p>
+                                <p className='text-sm text-muted-foreground'>Created on {new Date(patient.createdAt).toLocaleString()}</p>
 
                                 <Accordion type='single' collapsible>
                                     <AccordionItem value='history' className='border-none'>

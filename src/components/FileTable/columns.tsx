@@ -28,6 +28,7 @@ export const columns: ColumnDef<FileData>[] = [
     {
         accessorKey: 'createdAt',
         header: 'Uploaded',
+        cell: ({ row }) => new Date(row.getValue('createdAt')).toLocaleString(),
     },
     // {
     //     id: 'actions',
