@@ -109,7 +109,7 @@ const FileUploadDialog = ({ patient_id }: Props) => {
                                     <FormItem>
                                         <Label>Content</Label>
                                         <FormControl>
-                                            <Input type='file' multiple onChange={handleFileChange} />
+                                            <Input type='file' multiple onChange={handleFileChange} size={500} />
                                         </FormControl>
                                     </FormItem>
 

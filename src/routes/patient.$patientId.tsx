@@ -81,8 +81,8 @@ function PatientComponent() {
         <div className='flex-grow h-full'>
             <div className='max-w-7xl mx-auto mt-10 flex justify-center'>
                 <div className={cn('grid gap-4', !isOwner ? 'grid-cols-4' : 'grid-cols-10')}>
-                    <div className={cn('grid gap-4', !isOwner ? 'col-span-4' : 'col-span-3')}>
-                        <Card>
+                    <div className={cn('flex flex-col gap-y-4', !isOwner ? 'col-span-4' : 'col-span-3')}>
+                        <Card className='h-fit'>
                             <CardHeader>
                                 <div className='flex space-x-2 items-center'>
                                     <CardTitle className='text-xl'>Owner Information</CardTitle>
@@ -111,7 +111,7 @@ function PatientComponent() {
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card>
+                        <Card className='h-fit'>
                             <CardHeader>
                                 <div className='flex justify-between'>
                                     <div className='flex space-x-2 items-center'>
