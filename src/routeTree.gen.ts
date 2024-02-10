@@ -15,6 +15,7 @@ import { Route as SettingsImport } from './routes/settings'
 import { Route as AuthImport } from './routes/auth'
 import { Route as AccountImport } from './routes/account'
 import { Route as IndexImport } from './routes/index'
+import { Route as PatientPatientIdImport } from './routes/patient.$patientId'
 
 // Create/Update Routes
 
@@ -38,6 +39,11 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const PatientPatientIdRoute = PatientPatientIdImport.update({
+  path: '/patient/$patientId',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -58,6 +64,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsImport
       parentRoute: typeof rootRoute
     }
+    '/patient/$patientId': {
+      preLoaderRoute: typeof PatientPatientIdImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -68,6 +78,7 @@ export const routeTree = rootRoute.addChildren([
   AccountRoute,
   AuthRoute,
   SettingsRoute,
+  PatientPatientIdRoute,
 ])
 
 /* prettier-ignore-end */

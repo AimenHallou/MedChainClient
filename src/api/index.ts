@@ -1,5 +1,5 @@
 // axiosInstance.ts
-import { IPatient } from '@/types/patient';
+import { IPatient, IUser } from '@/types/patient';
 import axios, { AxiosInstance } from 'axios';
 import { z } from 'zod';
 
@@ -45,6 +45,12 @@ export const getPatients = async (page = 1, limit = 15, filter: string | null = 
     });
 };
 
+export const getPatient = async (id: string) => {
+    return api.get(`/patients/${id}`).then((res) => {
+        return { patient: res.data.patient as IPatient, owner: res.data.owner as IUser };
+    });
+};
+
 export const getPatientCount = async () => {
     return api.get('/patients/count').then((res) => res.data.count as number);
 };
@@ -80,6 +86,30 @@ export const addPatientFormSchema = z.object({
 export const createPatient = async (patient: z.infer<typeof addPatientFormSchema>) => {
     return api
         .post('/patients', patient)
+        .then((res) => res.data.patient as IPatient)
+        .catch((err) => handleErrorResponse(err));
+};
+
+export const addFilesFormSchema = z.object({
+    patient_id: z.string(),
+    content: z.array(
+        z
+            .object({
+                base64: z.string(),
+                name: z.string(),
+                dataType: z.string(),
+                ipfsCID: z.string(),
+            })
+            .refine((data) => data.dataType !== '', {
+                message: 'Data type is required.',
+                path: ['dataType'],
+            })
+    ),
+});
+
+export const addFiles = async (form: z.infer<typeof addFilesFormSchema>) => {
+    return api
+        .post(`/patients/${form.patient_id}/add-files`, { files: form.content })
         .then((res) => res.data.patient as IPatient)
         .catch((err) => handleErrorResponse(err));
 };

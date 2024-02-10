@@ -2,14 +2,19 @@ import { IPatient } from '@/types/patient';
 import { shortenAddress } from '@/utils/shortenAddress';
 import { BsFillFilePersonFill } from 'react-icons/bs';
 import { Card, CardHeader, CardTitle } from '../ui/card';
+import { useNavigate } from '@tanstack/react-router';
 
 interface Props {
     patient: IPatient;
 }
 
 const PatientCard = ({ patient }: Props) => {
+    const navigate = useNavigate();
+
     return (
-        <Card className='bg-secondary cursor-pointer hover:scale-105 transition-all'>
+        <Card
+            className='bg-secondary cursor-pointer hover:scale-105 transition-all'
+            onClick={() => navigate({ to: '/patient/$patientId', params: { patientId: patient.patient_id } })}>
             <CardHeader>
                 <div className='flex justify-between items-center gap-x-4'>
                     <div className='grid gap-2'>

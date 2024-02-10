@@ -15,7 +15,7 @@ const Header = () => {
         <header className='flex justify-between items-center px-20 py-2 transition-all duration-200 border-b'>
             <nav className='flex'>
                 <Link to='/'>
-                    <img src='logo.png' alt='Logo' className='h-10 mr-3' />
+                    <img src='/logo.png' alt='Logo' className='h-10 mr-3' />
                 </Link>
             </nav>
             <div className='flex gap-4'>

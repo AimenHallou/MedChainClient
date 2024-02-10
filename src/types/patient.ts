@@ -34,3 +34,12 @@ export interface IPatient {
     history: IHistoryEvent[];
     accessRequests: string[];
 }
+
+export interface IUser {
+    username: string;
+    password: string;
+    address: string;
+    name: string;
+    healthcareType: string;
+    organizationName: string;
+}
