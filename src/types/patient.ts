@@ -44,6 +44,7 @@ export interface IPatient {
 }
 
 export interface IUser {
+    _id?: string;
     username: string;
     password: string;
     address: string;
@@ -51,3 +52,9 @@ export interface IUser {
     healthcareType: string;
     organizationName: string;
 }
+
+export interface ISharedList {
+    user: IUser;
+    files: IFile[];
+}
+[];

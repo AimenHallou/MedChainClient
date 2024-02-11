@@ -1,5 +1,5 @@
 // axiosInstance.ts
-import { IPatient, IUser } from '@/types/patient';
+import { IPatient, ISharedList, IUser } from '@/types/patient';
 import axios, { AxiosInstance } from 'axios';
 import { z } from 'zod';
 
@@ -63,7 +63,7 @@ export const getPatient = async (id: string) => {
     return api
         .get(`/patients/${id}`)
         .then((res) => {
-            return { patient: res.data.patient as IPatient, owner: res.data.owner as IUser };
+            return { patient: res.data.patient as IPatient, owner: res.data.owner as IUser, sharedList: res.data.sharedList as ISharedList[] };
         })
         .catch((err) => handleErrorResponse(err));
 };
@@ -147,14 +147,12 @@ export const deleteFiles = async (form: z.infer<typeof deleteFilesFormSchema>) =
 export const shareFilesFormSchema = z.object({
     patient_id: z.string(),
     fileIds: z.array(z.string()),
-    address: z.string().min(42, {
-        message: 'Enter a valid address',
-    }),
+    username: z.string(),
 });
 
 export const shareFiles = async (form: z.infer<typeof shareFilesFormSchema>) => {
     return api
-        .post(`/patients/${form.patient_id}/share-files`, { fileIds: form.fileIds, address: form.address })
+        .post(`/patients/${form.patient_id}/share-files`, { fileIds: form.fileIds, username: form.username })
         .then((res) => res.data.patient as IPatient)
         .catch((err) => handleErrorResponse(err));
 };

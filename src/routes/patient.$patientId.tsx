@@ -5,6 +5,7 @@ import FileShareDialog from '@/components/Dialogs/FileShareDialog';
 import FileUploadDialog from '@/components/Dialogs/FileUploadDialog';
 import { columns } from '@/components/FileTable/columns';
 import History from '@/components/History';
+import ManageAccess from '@/components/Patient/ManageAccess';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,12 +19,10 @@ import { createFileRoute } from '@tanstack/react-router';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useCallback, useMemo, useState } from 'react';
 import { BiTransfer } from 'react-icons/bi';
-import { BsPersonFillLock } from 'react-icons/bs';
 import { FaUser, FaUserInjured } from 'react-icons/fa';
-import { LuFiles } from 'react-icons/lu';
-import { VscSettings } from 'react-icons/vsc';
-import { useSelector } from 'react-redux';
 import { FiDownload } from 'react-icons/fi';
+import { LuFiles } from 'react-icons/lu';
+import { useSelector } from 'react-redux';
 
 export const Route = createFileRoute('/patient/$patientId')({
     // Or in a component
@@ -43,6 +42,7 @@ function PatientComponent() {
     });
 
     const [rowSelection, setRowSelection] = useState({});
+
     const table = useReactTable({
         data: data?.patient?.content || [],
         columns,
@@ -125,12 +125,12 @@ function PatientComponent() {
         );
     }
 
-    const { owner, patient } = data;
+    const { owner, patient, sharedList } = data;
 
     return (
         <div className='flex-grow h-full'>
             <div className='max-w-7xl mx-auto mt-10 flex justify-center'>
-                <div className={cn('grid gap-4', !isOwner ? 'grid-cols-10' : 'grid-cols-10')}>
+                <div className={cn('grid gap-4', !isOwner ? 'grid-cols-12' : 'grid-cols-12')}>
                     <div className={cn('flex flex-col gap-y-4', !isOwner ? 'col-span-3' : 'col-span-3')}>
                         <Card className='h-fit'>
                             <CardHeader>
@@ -180,6 +180,12 @@ function PatientComponent() {
 
                                 <p className='text-sm text-muted-foreground'>Created on {new Date(patient.createdAt).toLocaleString()}</p>
 
+                                {isOwner && (
+                                    <Button variant={'destructive'}>
+                                        Transfer Ownership <BiTransfer size={20} className='ml-1' />
+                                    </Button>
+                                )}
+
                                 <Accordion type='single' collapsible>
                                     <AccordionItem value='history' className='border-none'>
                                         <AccordionTrigger>History</AccordionTrigger>
@@ -192,26 +198,7 @@ function PatientComponent() {
                         </Card>
                     </div>
 
-                    <div className='flex flex-col gap-y-4 col-span-7'>
-                        {isOwner && (
-                            <Card className='w-full h-fit'>
-                                <CardHeader>
-                                    <div className='flex space-x-2 items-center'>
-                                        <CardTitle className='text-xl'>Admin Controls</CardTitle>
-                                        <VscSettings size={20} />
-                                    </div>
-                                </CardHeader>
-                                <CardContent className='flex gap-x-4'>
-                                    <Button variant={'secondary'}>
-                                        View Access Requests <BsPersonFillLock size={20} className='ml-1' />
-                                    </Button>
-                                    <Button variant={'destructive'}>
-                                        Transfer Ownership <BiTransfer size={20} className='ml-1' />
-                                    </Button>
-                                </CardContent>
-                            </Card>
-                        )}
-
+                    <div className='flex flex-col gap-y-4 col-span-9'>
                         <Card className='w-full h-fit'>
                             <CardHeader>
                                 <div className='flex justify-between'>
@@ -253,6 +240,8 @@ function PatientComponent() {
                                 <DataTable table={table} />
                             </CardContent>
                         </Card>
+
+                        {isOwner && <ManageAccess patient={patient} sharedList={sharedList}/>}
                     </div>
                 </div>
             </div>

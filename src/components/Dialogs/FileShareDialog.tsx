@@ -30,7 +30,7 @@ const FileShareDialog = ({ patient_id, files, disabled = false, reset }: Props) 
         defaultValues: {
             patient_id,
             fileIds: files.map((file) => file._id),
-            address: '',
+            username: '',
         },
         reValidateMode: 'onChange',
     });
@@ -66,7 +66,7 @@ const FileShareDialog = ({ patient_id, files, disabled = false, reset }: Props) 
             <DialogContent className='sm:max-w-lg'>
                 <DialogHeader>
                     <DialogTitle>Share Files</DialogTitle>
-                    <DialogDescription>Enter an address of the recipient to share the selected files with.</DialogDescription>
+                    <DialogDescription>Enter username of the recipient to share the selected files with.</DialogDescription>
                 </DialogHeader>
 
                 <Table>
@@ -89,15 +89,15 @@ const FileShareDialog = ({ patient_id, files, disabled = false, reset }: Props) 
                 </Table>
 
                 <Form {...shareFilesForm}>
-                    <form id='shareFilesForm' onSubmit={shareFilesForm.handleSubmit(onSubmit)} className='space-y-4'>
+                    <form id='shareFilesForm' onSubmit={shareFilesForm.handleSubmit(onSubmit)} className='space-y-4' autoComplete='off'>
                         <FormField
                             control={shareFilesForm.control}
-                            name='address'
+                            name='username'
                             render={({ field }) => (
                                 <FormItem>
-                                    <Label>Address</Label>
+                                    <Label>Username</Label>
                                     <FormControl>
-                                        <Input placeholder='Address of user to share with' {...field} type='text' autoComplete='off' autoCapitalize='off' />
+                                        <Input placeholder='Username of user to share with' {...field} type='text' autoComplete='off' autoCapitalize='off' />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
