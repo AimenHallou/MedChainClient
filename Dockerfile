@@ -13,4 +13,4 @@ RUN npm run build
 EXPOSE 3000
 EXPOSE 443
 
-CMD [ "npm", "run", "preview" ]
+CMD [ "npm", "run", "preview" , "--", "--host"]
