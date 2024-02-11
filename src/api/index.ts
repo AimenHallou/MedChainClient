@@ -176,6 +176,13 @@ export const shareFiles = async (form: z.infer<typeof shareFilesFormSchema>) => 
         .catch((err) => handleErrorResponse(err));
 };
 
+export const manageAccess = async (form: z.infer<typeof shareFilesFormSchema>) => {
+    return api
+        .post(`/patients/${form.patient_id}/manage-access`, { fileIds: form.fileIds, username: form.username })
+        .then((res) => res.data.patient as IPatient)
+        .catch((err) => handleErrorResponse(err));
+};
+
 export const requestAccess = async (patient_id: string) => {
     return api
         .post(`/patients/${patient_id}/request-access`)

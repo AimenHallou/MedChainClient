@@ -8,6 +8,8 @@ import { LuLayoutList } from 'react-icons/lu';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { rejectAccessRequest } from '@/api';
 import FileApproveDialog from '../Dialogs/FileApproveDialog';
+import FileManageDialog from '../Dialogs/FileManageDialog';
+import { Badge } from '../ui/badge';
 
 interface Props {
     patient: IPatient;
@@ -50,40 +52,49 @@ const ManageAccess = ({ patient, sharedList, accessRequests }: Props) => {
                     </div>
 
                     <div className='flex gap-x-3'>
-                        <Button variant={'secondary'} onClick={toggleManageAccess}>
-                            {isManageAccess ? 'View Access Requests' : 'Manage Access'}
+                        <Button onClick={toggleManageAccess}>
+                            {isManageAccess ? 'View Access Requests' : 'Manage Access'}{' '}
+                            {accessRequests.length > 0 && isManageAccess && <Badge className='bg-red-400 hover:bg-red-400 ml-3'>{accessRequests.length}</Badge>}
                         </Button>
                     </div>
                 </div>
             </CardHeader>
             <CardContent>
                 {isManageAccess ? (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Username</TableHead>
-                                <TableHead>ID</TableHead>
-                                <TableHead>Files Shared</TableHead>
-                                <TableHead className='flex justify-center items-center'>Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {sharedList.map((item) => {
-                                return (
-                                    <TableRow key={item.user._id}>
-                                        <TableCell>{item.user.username}</TableCell>
-                                        <TableCell>{item.user._id}</TableCell>
-                                        <TableCell>{item.files.length}</TableCell>
-                                        <TableCell className='flex justify-center items-center'>
-                                            <Button variant='secondary' className='h-8 w-fit'>
-                                                Edit
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
+                    sharedList.length > 0 ? (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Username</TableHead>
+                                    <TableHead>ID</TableHead>
+                                    <TableHead>Files Shared</TableHead>
+                                    <TableHead className='flex justify-center items-center'>Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {sharedList.map((item) => {
+                                    return (
+                                        <TableRow key={item.user._id}>
+                                            <TableCell>{item.user.username}</TableCell>
+                                            <TableCell>{item.user._id}</TableCell>
+                                            <TableCell>{item.files.length}</TableCell>
+                                            <TableCell className='flex justify-center items-center'>
+                                                <FileManageDialog
+                                                    files={patient.content}
+                                                    initialSelected={item.files.map((file) => file._id!)}
+                                                    username={item.user.username}
+                                                    patient_id={patient.patient_id}
+                                                    reset={() => {}}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <p className='text-center text-muted-foreground'>No shared files</p>
+                    )
                 ) : accessRequests.length > 0 ? (
                     <>
                         <Table>

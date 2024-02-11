@@ -81,7 +81,7 @@ const FileApproveDialog = ({ files, patient_id, username, disabled = false, rese
             <DialogTrigger asChild>
                 <Button
                     disabled={disabled}
-                    className='bg-blue-500 hover:bg-blue-600 h-8 w-fit'
+                    className='bg-sky-500 hover:bg-sky-600 h-8 w-fit'
                     onClick={() => {
                         shareFilesForm.reset();
                         shareFilesMutation.reset();

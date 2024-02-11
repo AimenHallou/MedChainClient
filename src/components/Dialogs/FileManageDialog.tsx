@@ -1,42 +1,87 @@
-import { shareFiles, shareFilesFormSchema } from '@/api';
+import { manageAccess, shareFilesFormSchema } from '@/api';
+import { columns } from '@/components/FileTable/columns';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { IFile } from '@/types/patient';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useMemo, useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { IoMdShareAlt } from 'react-icons/io';
 import { z } from 'zod';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '../ui/form';
-import { Label } from '@radix-ui/react-dropdown-menu';
-import { Input } from '../ui/input';
+import { DataTable } from '../DataTable';
+import { Form } from '../ui/form';
 
 interface Props {
-    patient_id: string;
     files: IFile[];
-    disabled: boolean;
+    initialSelected: string[];
+    patient_id: string;
+    username: string;
+    disabled?: boolean;
     reset: () => void;
 }
 
-const FileShareDialog = ({ patient_id, files, disabled = false, reset }: Props) => {
+const FileManageDialog = ({ files, initialSelected, patient_id, username, disabled = false, reset }: Props) => {
     const queryClient = useQueryClient();
 
     const [dialogOpen, setDialogOpen] = useState(false);
+
+    const [rowSelection, setRowSelection] = useState({});
+
+    const [initial, setInitial] = useState({});
+
+    useEffect(() => {
+        const initialSelection: any = {};
+
+        files.forEach((file, index) => {
+            if (initialSelected.includes(file._id!)) {
+                initialSelection[index] = true;
+            }
+        });
+        setRowSelection(initialSelection);
+        setInitial(initialSelection);
+    }, [initialSelected, files]);
+
+    const hasChanged = useMemo(() => {
+        return JSON.stringify(initial) !== JSON.stringify(rowSelection);
+    }, [initial, rowSelection]);
+
+    const table = useReactTable({
+        data: files,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        onRowSelectionChange: setRowSelection,
+        state: {
+            rowSelection,
+        },
+    });
+
+    const selectedFiles: IFile[] = useMemo(() => {
+        if (Object.keys(rowSelection).length === 0) return [];
+
+        const f: IFile[] = [];
+
+        for (const key in rowSelection) {
+            if (files[parseInt(key)]) {
+                f.push(files[parseInt(key)]);
+            }
+        }
+
+        return f;
+    }, [rowSelection, files]);
 
     const shareFilesForm = useForm<z.infer<typeof shareFilesFormSchema>>({
         resolver: zodResolver(shareFilesFormSchema),
         defaultValues: {
             patient_id,
-            fileIds: files.map((file) => file._id),
-            username: '',
+            fileIds: [],
+            username,
         },
         reValidateMode: 'onChange',
     });
 
     const shareFilesMutation = useMutation({
-        mutationFn: shareFiles,
+        mutationFn: manageAccess,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [patient_id] });
             reset();
@@ -45,7 +90,8 @@ const FileShareDialog = ({ patient_id, files, disabled = false, reset }: Props) 
     });
 
     const onSubmit = (values: z.infer<typeof shareFilesFormSchema>) => {
-        values.fileIds = files.map((file) => file._id!);
+        values.username = username;
+        values.fileIds = selectedFiles.map((file) => file._id!);
         shareFilesMutation.mutate(values);
     };
 
@@ -54,62 +100,28 @@ const FileShareDialog = ({ patient_id, files, disabled = false, reset }: Props) 
             <DialogTrigger asChild>
                 <Button
                     disabled={disabled}
-                    className='bg-sky-500 hover:bg-sky-600'
+                    variant='secondary'
+                    className='h-8 w-fit'
                     onClick={() => {
                         shareFilesForm.reset();
                         shareFilesMutation.reset();
                         setDialogOpen(true);
                     }}>
-                    Share <IoMdShareAlt size={20} className='ml-1' />
+                    Edit
                 </Button>
             </DialogTrigger>
             <DialogContent className='sm:max-w-lg'>
                 <DialogHeader>
-                    <DialogTitle>Share Files</DialogTitle>
-                    <DialogDescription>Enter username of the recipient to share the selected files with.</DialogDescription>
+                    <DialogTitle>Manage Access</DialogTitle>
+                    <DialogDescription>Modify your selection of files you want to share with {username}</DialogDescription>
                 </DialogHeader>
-
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Data Type</TableHead>
-                            <TableHead>ID</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {files.map((file) => (
-                            <TableRow key={file._id}>
-                                <TableCell className='font-medium'>{file.name}</TableCell>
-                                <TableCell>{file.dataType}</TableCell>
-                                <TableCell>{file._id}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-
+                <DataTable table={table} />
                 <Form {...shareFilesForm}>
-                    <form id='shareFilesForm' onSubmit={shareFilesForm.handleSubmit(onSubmit)} className='space-y-4' autoComplete='off'>
-                        <FormField
-                            control={shareFilesForm.control}
-                            name='username'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <Label>Username</Label>
-                                    <FormControl>
-                                        <Input placeholder='Username of user to share with' {...field} type='text' autoComplete='off' autoCapitalize='off' />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </form>
+                    <form id='shareFilesForm' onSubmit={shareFilesForm.handleSubmit(onSubmit)} className='hidden'></form>
                 </Form>
-
                 {shareFilesMutation.error?.message && <p className='text-red-500 text-center text-sm'>{shareFilesMutation.error.message}</p>}
-
                 <DialogFooter className='sm:justify-start'>
-                    <Button type='submit' form='shareFilesForm' className='bg-blue-500 hover:bg-blue-600'>
+                    <Button disabled={!hasChanged} type='submit' form='shareFilesForm' className='bg-blue-500 hover:bg-blue-600'>
                         {shareFilesMutation.isPending && (
                             <svg className='animate-spin -ml-1 mr-3 h-5 w-5' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
                                 <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
@@ -119,7 +131,7 @@ const FileShareDialog = ({ patient_id, files, disabled = false, reset }: Props) 
                                     d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
                             </svg>
                         )}
-                        Share
+                        Update
                     </Button>
 
                     <DialogClose asChild>
@@ -138,4 +150,4 @@ const FileShareDialog = ({ patient_id, files, disabled = false, reset }: Props) 
     );
 };
 
-export default FileShareDialog;
+export default FileManageDialog;
