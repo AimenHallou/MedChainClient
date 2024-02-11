@@ -193,6 +193,11 @@ function PatientComponent() {
                             </CardHeader>
                             <CardContent className='grid gap-4'>
                                 <div className='flex gap-x-3'>
+                                    <Badge variant='outline'>ID</Badge>
+                                    <p className='text-sm'>{owner._id}</p>
+                                </div>
+
+                                <div className='flex gap-x-3'>
                                     <Badge variant='outline'>Name</Badge>
                                     <p className='text-sm'>{owner.name}</p>
                                 </div>
