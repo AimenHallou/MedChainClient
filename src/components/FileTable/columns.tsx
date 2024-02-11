@@ -26,9 +26,8 @@ export const columns: ColumnDef<IFile>[] = [
         header: 'Data Type',
     },
     {
-        accessorKey: 'createdAt',
-        header: 'Uploaded',
-        cell: ({ row }) => new Date(row.getValue('createdAt')).toLocaleString(),
+        accessorKey: '_id',
+        header: 'ID',
     },
     // {
     //     id: 'actions',

@@ -16,7 +16,9 @@ import { z } from 'zod';
 
 const dataTypes = ['Lab results', 'Medical images', 'Medication history', 'Clinician notes'];
 
-const AddPatientDialog = () => {
+interface Props extends React.HTMLAttributes<HTMLButtonElement> {}
+
+const AddPatientDialog = ({ ...rest }: Props) => {
     const queryClient = useQueryClient();
 
     const [addPatientDialogOpen, setAddPatientDialogOpen] = useState(false);
@@ -86,6 +88,7 @@ const AddPatientDialog = () => {
         <Dialog open={addPatientDialogOpen} onOpenChange={setAddPatientDialogOpen}>
             <DialogTrigger asChild>
                 <Button
+                    {...rest}
                     onClick={() => {
                         addPatientMutation.reset();
                         addPatientForm.reset();
