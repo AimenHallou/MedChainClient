@@ -3,6 +3,7 @@ import { DataTable } from '@/components/DataTable';
 import FileDeleteDialog from '@/components/Dialogs/FileDeleteDialog';
 import FileShareDialog from '@/components/Dialogs/FileShareDialog';
 import FileUploadDialog from '@/components/Dialogs/FileUploadDialog';
+import TransferOwnershipDialog from '@/components/Dialogs/TransferOwnershipDialog';
 import { columns } from '@/components/FileTable/columns';
 import History from '@/components/History';
 import ManageAccess from '@/components/Patient/ManageAccess';
@@ -18,7 +19,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useCallback, useMemo, useState } from 'react';
-import { BiTransfer } from 'react-icons/bi';
 import { FaUser, FaUserInjured } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
 import { LuFiles } from 'react-icons/lu';
@@ -231,11 +231,7 @@ function PatientComponent() {
 
                                 <p className='text-sm text-muted-foreground'>Created on {new Date(patient.createdAt).toLocaleString()}</p>
 
-                                {isOwner && (
-                                    <Button variant={'destructive'}>
-                                        Transfer Ownership <BiTransfer size={20} className='ml-1' />
-                                    </Button>
-                                )}
+                                {isOwner && <TransferOwnershipDialog patient_id={patient.patient_id} reset={() => {}} />}
 
                                 <Accordion type='single' collapsible>
                                     <AccordionItem value='history' className='border-none'>

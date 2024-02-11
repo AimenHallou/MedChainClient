@@ -208,3 +208,16 @@ export const rejectAccessRequest = async (form: z.infer<typeof rejectSchema>) =>
         .then((res) => res.data.patient as IPatient)
         .catch((err) => handleErrorResponse(err));
 };
+
+export const transferOwnershipSchema = z.object({
+    patient_id: z.string(),
+    username: z.string(),
+    password: z.string(),
+});
+
+export const transferOwnership = async (form: z.infer<typeof transferOwnershipSchema>) => {
+    return api
+        .post(`/patients/${form.patient_id}/transfer-ownership`, { username: form.username, password: form.password })
+        .then((res) => res.data.patient as IPatient)
+        .catch((err) => handleErrorResponse(err));
+};
