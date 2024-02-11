@@ -109,6 +109,7 @@ const userSlice = createSlice({
         logout: (state) => {
             state.user = undefined;
             localStorage.removeItem('token');
+            setBearerToken('');
         },
         setAuthError: (state, action) => {
             state.error = action.payload;

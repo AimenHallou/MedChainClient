@@ -16,13 +16,14 @@ import { shortenAddress } from '@/utils/shortenAddress';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { BiTransfer } from 'react-icons/bi';
 import { BsPersonFillLock } from 'react-icons/bs';
 import { FaUser, FaUserInjured } from 'react-icons/fa';
 import { LuFiles } from 'react-icons/lu';
 import { VscSettings } from 'react-icons/vsc';
 import { useSelector } from 'react-redux';
+import { FiDownload } from 'react-icons/fi';
 
 export const Route = createFileRoute('/patient/$patientId')({
     // Or in a component
@@ -43,7 +44,7 @@ function PatientComponent() {
 
     const [rowSelection, setRowSelection] = useState({});
     const table = useReactTable({
-        data: data?.patient.content || [],
+        data: data?.patient?.content || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onRowSelectionChange: setRowSelection,
@@ -53,8 +54,8 @@ function PatientComponent() {
     });
 
     const isOwner = useMemo(() => {
-        return data?.owner.address === user?.address;
-    }, [data?.owner.address, user?.address]);
+        return data?.owner?.address === user?.address;
+    }, [data?.owner?.address, user?.address]);
 
     const selectedFiles: IFile[] = useMemo(() => {
         if (Object.keys(rowSelection).length === 0) return [];
@@ -62,13 +63,43 @@ function PatientComponent() {
         const files = [];
 
         for (const key in rowSelection) {
-            if (data?.patient.content[parseInt(key)]) {
-                files.push(data?.patient.content[parseInt(key)]);
+            if (data?.patient?.content[parseInt(key)]) {
+                files.push(data?.patient?.content[parseInt(key)]);
             }
         }
 
         return files;
-    }, [rowSelection, data?.patient.content]);
+    }, [rowSelection, data?.patient?.content]);
+
+    const handleOnDownload = useCallback(() => {
+        const download = (base64: string, name: string) => {
+            const byteString = atob(base64);
+            const arrayBuffer = new ArrayBuffer(byteString.length);
+            const int8Array = new Uint8Array(arrayBuffer);
+            for (let i = 0; i < byteString.length; i++) {
+                int8Array[i] = byteString.charCodeAt(i);
+            }
+            const blob = new Blob([arrayBuffer], {
+                type: 'application/octet-stream',
+            });
+
+            const blobUrl = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+        };
+
+        for (const file of selectedFiles) {
+            download(file.base64, file.name);
+        }
+
+        setRowSelection({});
+    }, [selectedFiles]);
 
     if (isLoading) {
         return (
@@ -86,13 +117,21 @@ function PatientComponent() {
         );
     }
 
-    const { owner, patient } = data!;
+    if (!data) {
+        return (
+            <div className='flex-grow h-full'>
+                <div className='max-w-7xl mx-auto mt-10 flex justify-center'>Error fetching data</div>
+            </div>
+        );
+    }
+
+    const { owner, patient } = data;
 
     return (
         <div className='flex-grow h-full'>
             <div className='max-w-7xl mx-auto mt-10 flex justify-center'>
-                <div className={cn('grid gap-4', !isOwner ? 'grid-cols-4' : 'grid-cols-10')}>
-                    <div className={cn('flex flex-col gap-y-4', !isOwner ? 'col-span-4' : 'col-span-3')}>
+                <div className={cn('grid gap-4', !isOwner ? 'grid-cols-10' : 'grid-cols-10')}>
+                    <div className={cn('flex flex-col gap-y-4', !isOwner ? 'col-span-3' : 'col-span-3')}>
                         <Card className='h-fit'>
                             <CardHeader>
                                 <div className='flex space-x-2 items-center'>
@@ -122,7 +161,7 @@ function PatientComponent() {
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className='h-fit'>
+                        <Card className='h-fit w-full'>
                             <CardHeader>
                                 <div className='flex justify-between'>
                                     <div className='flex space-x-2 items-center'>
@@ -130,7 +169,7 @@ function PatientComponent() {
                                         <FaUserInjured size={20} />
                                     </div>
 
-                                    {!isOwner && <Button>Request Access</Button>}
+                                    {!isOwner && patient.content.length === 0 && <Button className='ml-5'>Request Access</Button>}
                                 </div>
                             </CardHeader>
                             <CardContent className='grid gap-4'>
@@ -153,8 +192,8 @@ function PatientComponent() {
                         </Card>
                     </div>
 
-                    {isOwner && (
-                        <div className='flex flex-col gap-y-4 col-span-7'>
+                    <div className='flex flex-col gap-y-4 col-span-7'>
+                        {isOwner && (
                             <Card className='w-full h-fit'>
                                 <CardHeader>
                                     <div className='flex space-x-2 items-center'>
@@ -171,36 +210,50 @@ function PatientComponent() {
                                     </Button>
                                 </CardContent>
                             </Card>
+                        )}
 
-                            <Card className='w-full h-fit'>
-                                <CardHeader>
-                                    <div className='flex justify-between'>
-                                        <div className='flex space-x-2 items-center'>
-                                            <CardTitle className='text-xl'>Attached Files</CardTitle>
-                                            <LuFiles size={20} />
-                                        </div>
-
-                                        <div className='flex gap-x-3'>
-                                            <FileShareDialog patient_id={patient.patient_id} files={selectedFiles} disabled={selectedFiles.length === 0} />
-                                            <FileDeleteDialog
-                                                patient_id={patient.patient_id}
-                                                files={selectedFiles}
-                                                reset={() => {
-                                                    setRowSelection({});
-                                                }}
-                                                disabled={selectedFiles.length === 0}
-                                            />
-
-                                            <FileUploadDialog patient_id={patient.patient_id} />
-                                        </div>
+                        <Card className='w-full h-fit'>
+                            <CardHeader>
+                                <div className='flex justify-between'>
+                                    <div className='flex space-x-2 items-center'>
+                                        <CardTitle className='text-xl'>Attached Files</CardTitle>
+                                        <LuFiles size={20} />
                                     </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <DataTable table={table} />
-                                </CardContent>
-                            </Card>
-                        </div>
-                    )}
+
+                                    <div className='flex gap-x-3'>
+                                        <Button disabled={selectedFiles.length === 0} variant={'outline'} onClick={handleOnDownload}>
+                                            Download <FiDownload size={15} className='ml-1' />
+                                        </Button>
+                                        {isOwner && (
+                                            <>
+                                                <FileShareDialog
+                                                    patient_id={patient.patient_id}
+                                                    files={selectedFiles}
+                                                    reset={() => {
+                                                        setRowSelection({});
+                                                    }}
+                                                    disabled={selectedFiles.length === 0}
+                                                />
+                                                <FileDeleteDialog
+                                                    patient_id={patient.patient_id}
+                                                    files={selectedFiles}
+                                                    reset={() => {
+                                                        setRowSelection({});
+                                                    }}
+                                                    disabled={selectedFiles.length === 0}
+                                                />
+
+                                                <FileUploadDialog patient_id={patient.patient_id} />
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <DataTable table={table} />
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>

@@ -66,11 +66,11 @@ function Auth() {
                             <CardTitle className='text-2xl text-center'>You're already logged in.</CardTitle>
                         </CardHeader>
                         <CardContent className='grid gap-4'>
-                            <Button variant={'secondary'}>
-                                <Link to={'/account'} className=''>
+                            <Link to={'/account'} className='w-full'>
+                                <Button variant={'secondary'} className='w-full'>
                                     Go to My Account
-                                </Link>
-                            </Button>
+                                </Button>
+                            </Link>
                             <Button
                                 variant={'destructive'}
                                 onClick={() => {

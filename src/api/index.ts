@@ -24,6 +24,7 @@ const handleErrorResponse = (error: any) => {
     } else {
         errorResponse = error.message;
     }
+    console.error(errorResponse);
     throw new Error(errorResponse);
 };
 
@@ -32,36 +33,53 @@ export const setBearerToken = (token: string) => {
 };
 
 export const getBearerToken = () => {
-    return api.defaults.headers.common;
+    return api.defaults.headers.common.Authorization;
+};
+
+export const getMe = async () => {
+    const token = JSON.parse(localStorage.getItem('token') || '{}');
+
+    setBearerToken(token);
+
+    return api
+        .get('/users/me')
+        .then((res) => res.data.user as IUser)
+        .catch((err) => handleErrorResponse(err));
 };
 
 export const getPatients = async (page = 1, limit = 15, filter: string | null = null, sortBy: string | null = null, sortOrder: string | null = null) => {
-    await new Promise((r) => setTimeout(r, 300));
-    return api.get('/patients', { params: { page, limit, filter, sortBy, sortOrder } }).then((res) => {
-        return {
-            patients: res.data.patients as IPatient[],
-            totalCount: res.data.totalCount as number,
-        };
-    });
+    return api
+        .get('/patients', { params: { page, limit, filter, sortBy, sortOrder } })
+        .then((res) => {
+            return {
+                patients: res.data.patients as IPatient[],
+                totalCount: res.data.totalCount as number,
+            };
+        })
+        .catch((err) => handleErrorResponse(err));
 };
 
 export const getPatient = async (id: string) => {
-    return api.get(`/patients/${id}`).then((res) => {
-        return { patient: res.data.patient as IPatient, owner: res.data.owner as IUser };
-    });
+    return api
+        .get(`/patients/${id}`)
+        .then((res) => {
+            return { patient: res.data.patient as IPatient, owner: res.data.owner as IUser };
+        })
+        .catch((err) => handleErrorResponse(err));
 };
 
 export const getPatientCount = async () => {
-    return api.get('/patients/count').then((res) => res.data.count as number);
+    return api
+        .get('/patients/count')
+        .then((res) => res.data.count as number)
+        .catch((err) => handleErrorResponse(err));
 };
 
 export const getRecentPatients = async (number = 3) => {
     return api
         .get(`/patients/recent/${number}`)
         .then((res) => res.data.patients as IPatient[])
-        .catch((err) => {
-            console.error(err);
-        });
+        .catch((err) => handleErrorResponse(err));
 };
 
 export const addPatientFormSchema = z.object({

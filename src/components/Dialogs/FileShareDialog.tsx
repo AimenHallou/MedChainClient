@@ -17,9 +17,10 @@ interface Props {
     patient_id: string;
     files: IFile[];
     disabled: boolean;
+    reset: () => void;
 }
 
-const FileShareDialog = ({ patient_id, files, disabled = false }: Props) => {
+const FileShareDialog = ({ patient_id, files, disabled = false, reset }: Props) => {
     const queryClient = useQueryClient();
 
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -38,11 +39,13 @@ const FileShareDialog = ({ patient_id, files, disabled = false }: Props) => {
         mutationFn: shareFiles,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [patient_id] });
+            reset();
             setDialogOpen(false);
         },
     });
 
     const onSubmit = (values: z.infer<typeof shareFilesFormSchema>) => {
+        values.fileIds = files.map((file) => file._id!);
         shareFilesMutation.mutate(values);
     };
 

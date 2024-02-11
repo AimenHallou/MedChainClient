@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { linkAddress, unlinkAddress } from '@/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
@@ -16,10 +17,9 @@ import { connect } from '@/redux/slices/blockchainSlice';
 import { setAuthError, updateDetails, updateUser } from '@/redux/slices/userSlice';
 import { shortenAddress } from '@/utils/shortenAddress';
 import { useMutation } from '@tanstack/react-query';
-import { linkAddress, unlinkAddress } from '@/api';
 
 export const Route = createFileRoute('/account')({
-    component: Account,
+    component: () => <Account />,
     onEnter: () => {
         document.title = 'Account | MedChain';
     },

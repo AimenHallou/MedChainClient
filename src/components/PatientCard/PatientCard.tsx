@@ -1,8 +1,7 @@
 import { IPatient } from '@/types/patient';
-import { shortenAddress } from '@/utils/shortenAddress';
+import { useNavigate } from '@tanstack/react-router';
 import { BsFillFilePersonFill } from 'react-icons/bs';
 import { Card, CardHeader, CardTitle } from '../ui/card';
-import { useNavigate } from '@tanstack/react-router';
 
 interface Props {
     patient: IPatient;
@@ -19,7 +18,7 @@ const PatientCard = ({ patient }: Props) => {
                 <div className='flex justify-between items-center gap-x-4'>
                     <div className='grid gap-2'>
                         <CardTitle>{patient.patient_id}</CardTitle>
-                        <p className='text-xs'>Owner: {shortenAddress(patient.owner)}</p>
+                        <p className='text-xs'>Owner ID: {patient.owner_id}</p>
                         <p className='text-xs text-muted-foreground'>{new Date(patient.createdAt).toLocaleString()}</p>
                     </div>
                     <BsFillFilePersonFill className='text-blue-500 h-12 w-12 flex-shrink-0' />

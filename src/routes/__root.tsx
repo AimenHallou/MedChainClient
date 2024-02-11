@@ -1,3 +1,4 @@
+import { setBearerToken } from '@/api';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { checkConnection } from '@/redux/slices/blockchainSlice';
@@ -27,6 +28,12 @@ export const Route = createRootRoute({
 
 function Root() {
     const dispatch = useDispatch<AppDispatch>();
+
+    useEffect(() => {
+        const token = JSON.parse(localStorage.getItem('token') || '{}');
+
+        setBearerToken(token);
+    }, []);
 
     useEffect(() => {
         dispatch(getMe());

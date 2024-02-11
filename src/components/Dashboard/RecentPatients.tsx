@@ -1,6 +1,5 @@
 import { getRecentPatients } from '@/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { shortenAddress } from '@/utils/shortenAddress';
 import { useQuery } from '@tanstack/react-query';
 import { FaRegChartBar } from 'react-icons/fa';
 import PatientCardSkeleton from '../PatientCard/PatientCardSkeleton';
@@ -32,7 +31,7 @@ const RecentPatients = ({ ...rest }: Props) => {
                                 <div className='flex justify-between items-center gap-x-5'>
                                     <div className='grid gap-2'>
                                         <CardTitle>{patient.patient_id}</CardTitle>
-                                        <p className='text-xs'>Owner: {shortenAddress(patient.owner)}</p>
+                                        <p className='text-xs'>Owner ID: {patient.owner_id}</p>
                                         <p className='text-xs text-muted-foreground'>{new Date(patient.createdAt).toLocaleString()}</p>
                                     </div>
                                 </div>

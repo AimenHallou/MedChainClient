@@ -35,7 +35,7 @@ export interface IFile {
 
 export interface IPatient {
     patient_id: string;
-    owner: string;
+    owner_id: string;
     createdAt: Date;
     content: IFile[];
     sharedWith: Map<string, string[]>;

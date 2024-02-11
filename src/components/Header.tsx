@@ -6,8 +6,10 @@ import { AppDispatch } from '../redux/store';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Link } from '@tanstack/react-router';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Header = () => {
+    const queryClient = useQueryClient();
     const dispatch = useDispatch<AppDispatch>();
     const user = useSelector((state: RootState) => state.auth.user);
 
@@ -34,6 +36,7 @@ const Header = () => {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                                 onClick={() => {
+                                    queryClient.invalidateQueries({ queryKey: ['me'] });
                                     dispatch(logout());
                                 }}>
                                 <p className='text-red-400'>Log out</p>

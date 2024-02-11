@@ -5,6 +5,7 @@ import PatientCardSkeleton from '@/components/PatientCard/PatientCardSkeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -13,10 +14,9 @@ import { BiSearch } from 'react-icons/bi';
 import { FaSortAmountDown, FaSortAmountUp, FaUser } from 'react-icons/fa';
 import PatientSummary from '../components/Dashboard/PatientSummary';
 import RecentPatients from '../components/Dashboard/RecentPatients';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export const Route = createFileRoute('/')({
-    component: Index,
+    component: () => <Index />,
     onEnter: () => {
         document.title = 'Home | MedChain';
     },
@@ -106,9 +106,15 @@ function Index() {
                                 {data?.patients.map((patient) => {
                                     return <PatientCard key={patient.patient_id} patient={patient} />;
                                 })}
+
+                                {!patientIsLoading && data?.patients.length === 0 && (
+                                    <div className='col-span-3 flex justify-center items-center'>
+                                        <p className='text-muted-foreground'>No patients found</p>
+                                    </div>
+                                )}
                             </div>
 
-                            {data && (
+                            {data && data.totalCount > 0 && (
                                 <Pagination>
                                     <PaginationContent>
                                         <PaginationItem>
