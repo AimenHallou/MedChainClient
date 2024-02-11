@@ -1,6 +1,7 @@
 import { cancelAccessRequest, getPatient, requestAccess } from '@/api';
 import { DataTable } from '@/components/DataTable';
 import FileDeleteDialog from '@/components/Dialogs/FileDeleteDialog';
+import FileEditDialog from '@/components/Dialogs/FileEditDialog';
 import FileShareDialog from '@/components/Dialogs/FileShareDialog';
 import FileUploadDialog from '@/components/Dialogs/FileUploadDialog';
 import TransferOwnershipDialog from '@/components/Dialogs/TransferOwnershipDialog';
@@ -260,6 +261,16 @@ function PatientComponent() {
                                         </Button>
                                         {isOwner && (
                                             <>
+                                                {selectedFiles[0] && (
+                                                    <FileEditDialog
+                                                        patient_id={patient.patient_id}
+                                                        file={selectedFiles[0]}
+                                                        disabled={selectedFiles.length !== 1}
+                                                        reset={() => {
+                                                            setRowSelection({});
+                                                        }}
+                                                    />
+                                                )}
                                                 <FileShareDialog
                                                     patient_id={patient.patient_id}
                                                     files={selectedFiles}

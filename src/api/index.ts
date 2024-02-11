@@ -151,6 +151,20 @@ export const addFiles = async (form: z.infer<typeof addFilesFormSchema>) => {
         .catch((err) => handleErrorResponse(err));
 };
 
+export const editFileSchema = z.object({
+    patient_id: z.string(),
+    fileId: z.string(),
+    name: z.string(),
+    dataType: z.string(),
+});
+
+export const editFile = async (form: z.infer<typeof editFileSchema>) => {
+    return api
+        .post(`/patients/${form.patient_id}/edit-file`, { name: form.name, dataType: form.dataType, fileId: form.fileId })
+        .then((res) => res.data.patient as IPatient)
+        .catch((err) => handleErrorResponse(err));
+};
+
 export const deleteFilesFormSchema = z.object({
     patient_id: z.string(),
     fileIds: z.array(z.string()),
