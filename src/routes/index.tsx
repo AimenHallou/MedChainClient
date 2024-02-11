@@ -22,7 +22,7 @@ function Index() {
                     <RecentPatients className='mt-4' />
                 </div>
                 <div className='col-span-8 relative'>
-                    <AddPatientDialog className='absolute right-0'/>
+                    <AddPatientDialog className='absolute right-0' />
 
                     <Tabs defaultValue='all'>
                         <TabsList>

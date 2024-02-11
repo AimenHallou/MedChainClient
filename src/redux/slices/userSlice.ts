@@ -33,10 +33,11 @@ export const register = createAsyncThunk('users/register', async (payload: AuthP
             data: payload,
         });
 
-        setBearerToken(response.data.token);
-        localStorage.setItem('token', JSON.stringify(response.data.token));
+        if (response.data.token) {
+            setBearerToken(response.data.token);
+            localStorage.setItem('token', JSON.stringify(response.data.token));
+        }
 
-        console.log(response);
         return response.data.user;
     } catch (error: any) {
         console.error(error.response.data.message);
@@ -51,9 +52,11 @@ export const login = createAsyncThunk('users/login', async (payload: AuthPayload
             url: '/users/login',
             data: payload,
         });
-
-        setBearerToken(response.data.token);
-        localStorage.setItem('token', JSON.stringify(response.data.token));
+        
+        if (response.data.token) {
+            setBearerToken(response.data.token);
+            localStorage.setItem('token', JSON.stringify(response.data.token));
+        }
 
         return response.data.user;
     } catch (error: any) {

@@ -30,9 +30,11 @@ function Root() {
     const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
-        const token = localStorage.getItem('token') && JSON.parse(localStorage.getItem('token') || '{}');
+        const token = JSON.parse(localStorage.getItem('token') || '{}');
 
-        setBearerToken(token);
+        if (token) {
+            setBearerToken(token);
+        }
     }, []);
 
     useEffect(() => {
