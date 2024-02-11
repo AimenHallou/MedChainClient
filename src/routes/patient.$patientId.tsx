@@ -197,10 +197,12 @@ function PatientComponent() {
                                     <p className='text-sm'>{owner.name}</p>
                                 </div>
 
-                                <div className='flex gap-x-3'>
-                                    <Badge variant='outline'>Address</Badge>
-                                    <p className='text-sm'>{shortenAddress(owner.address)}</p>
-                                </div>
+                                {owner.address && (
+                                    <div className='flex gap-x-3'>
+                                        <Badge variant='outline'>Address</Badge>
+                                        <p className='text-sm'>{shortenAddress(owner.address)}</p>
+                                    </div>
+                                )}
 
                                 <div className='flex gap-x-3'>
                                     <Badge variant='outline'>Healthcare Provider</Badge>
