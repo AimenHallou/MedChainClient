@@ -11,6 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { RiFileAddLine } from 'react-icons/ri';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
@@ -92,6 +93,7 @@ const FileUploadDialog = ({ patient_id }: Props) => {
                         setDialogOpen(true);
                     }}>
                     Add Files
+                    <RiFileAddLine size={20} className='ml-1' />
                 </Button>
             </DialogTrigger>
             <DialogContent className='sm:max-w-md'>

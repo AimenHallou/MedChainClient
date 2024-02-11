@@ -3,11 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { shortenAddress } from '@/utils/shortenAddress';
 import { useQuery } from '@tanstack/react-query';
 import { FaRegChartBar } from 'react-icons/fa';
+import PatientCardSkeleton from '../PatientCard/PatientCardSkeleton';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 
 const RecentPatients = ({ ...rest }: Props) => {
-    const { data: recentPatients } = useQuery({
+    const { data: recentPatients, isLoading } = useQuery({
         queryKey: ['recentPatients'],
         queryFn: () => getRecentPatients(3),
     });
@@ -22,6 +23,8 @@ const RecentPatients = ({ ...rest }: Props) => {
             </CardHeader>
 
             <CardContent className='grid grid-cols-1 gap-3'>
+                {isLoading && Array.from({ length: 2 }).map((_, i) => <PatientCardSkeleton key={i} />)}
+
                 {recentPatients?.map((patient) => {
                     return (
                         <Card key={patient.patient_id} className='bg-secondary cursor-pointer hover:scale-105 transition-all'>

@@ -1,9 +1,9 @@
 import { ColumnDef } from '@tanstack/react-table';
 
-import { FileData } from '@/types/file';
+import { IFile } from '@/types/patient';
 import { Checkbox } from '../ui/checkbox';
 
-export const columns: ColumnDef<FileData>[] = [
+export const columns: ColumnDef<IFile>[] = [
     {
         id: 'select',
         header: ({ table }) => (

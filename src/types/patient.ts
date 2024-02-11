@@ -25,11 +25,19 @@ export interface IHistoryEvent {
     with?: string;
 }
 
+export interface IFile {
+    _id?: string;
+    base64: string;
+    name: string;
+    dataType: string;
+    ipfsCID?: string;
+}
+
 export interface IPatient {
     patient_id: string;
     owner: string;
     createdAt: Date;
-    content: any[];
+    content: IFile[];
     sharedWith: Map<string, string[]>;
     history: IHistoryEvent[];
     accessRequests: string[];

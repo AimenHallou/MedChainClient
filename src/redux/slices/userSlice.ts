@@ -102,35 +102,6 @@ export const updateDetails = createAsyncThunk('users/updateDetails', async (payl
     }
 });
 
-export const linkAddress = createAsyncThunk('users/linkAddress', async (address: string, { rejectWithValue }) => {
-    try {
-        const response = await api({
-            method: 'POST',
-            url: '/users/linkAddress',
-            data: { address },
-        });
-
-        return response.data.user;
-    } catch (error: any) {
-        console.error(error.response.data.message);
-        return rejectWithValue(error.response.data.message);
-    }
-});
-
-export const unlinkAddress = createAsyncThunk('users/unlinkAddress', async (_, { rejectWithValue }) => {
-    try {
-        const response = await api({
-            method: 'POST',
-            url: '/users/unlinkAddress',
-        });
-
-        return response.data.user;
-    } catch (error: any) {
-        console.error(error.response.data.message);
-        return rejectWithValue(error.response.data.message);
-    }
-});
-
 const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -142,6 +113,10 @@ const userSlice = createSlice({
         setAuthError: (state, action) => {
             state.error = action.payload;
             state.response = '';
+        },
+
+        updateUser: (state, action) => {
+            state.user = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -167,15 +142,9 @@ const userSlice = createSlice({
         builder.addCase(updateDetails.rejected, (state, action) => {
             state.error = (action.payload as string) || '';
         });
-        builder.addCase(linkAddress.fulfilled, (state, action) => {
-            state.user = action.payload;
-        });
-        builder.addCase(unlinkAddress.fulfilled, (state, action) => {
-            state.user = action.payload;
-        });
     },
 });
 
-export const { logout, setAuthError } = userSlice.actions;
+export const { logout, setAuthError, updateUser } = userSlice.actions;
 
 export default userSlice.reducer;

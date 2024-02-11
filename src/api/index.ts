@@ -113,3 +113,44 @@ export const addFiles = async (form: z.infer<typeof addFilesFormSchema>) => {
         .then((res) => res.data.patient as IPatient)
         .catch((err) => handleErrorResponse(err));
 };
+
+export const deleteFilesFormSchema = z.object({
+    patient_id: z.string(),
+    fileIds: z.array(z.string()),
+});
+
+export const deleteFiles = async (form: z.infer<typeof deleteFilesFormSchema>) => {
+    return api
+        .delete(`/patients/${form.patient_id}/delete-files`, { data: { fileIds: form.fileIds } })
+        .then((res) => res.data.patient as IPatient)
+        .catch((err) => handleErrorResponse(err));
+};
+
+export const shareFilesFormSchema = z.object({
+    patient_id: z.string(),
+    fileIds: z.array(z.string()),
+    address: z.string().min(42, {
+        message: 'Enter a valid address',
+    }),
+});
+
+export const shareFiles = async (form: z.infer<typeof shareFilesFormSchema>) => {
+    return api
+        .post(`/patients/${form.patient_id}/share-files`, { fileIds: form.fileIds, address: form.address })
+        .then((res) => res.data.patient as IPatient)
+        .catch((err) => handleErrorResponse(err));
+};
+
+export const linkAddress = async (address: string) => {
+    return api
+        .post(`/users/linkAddress`, { address })
+        .then((res) => res.data.user as IUser)
+        .catch((err) => handleErrorResponse(err));
+};
+
+export const unlinkAddress = async () => {
+    return api
+        .post(`/users/unlinkAddress`)
+        .then((res) => res.data.user as IUser)
+        .catch((err) => handleErrorResponse(err));
+};

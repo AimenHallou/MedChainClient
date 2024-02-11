@@ -13,8 +13,10 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { connect } from '@/redux/slices/blockchainSlice';
-import { linkAddress, setAuthError, unlinkAddress, updateDetails } from '@/redux/slices/userSlice';
+import { setAuthError, updateDetails, updateUser } from '@/redux/slices/userSlice';
 import { shortenAddress } from '@/utils/shortenAddress';
+import { useMutation } from '@tanstack/react-query';
+import { linkAddress, unlinkAddress } from '@/api';
 
 export const Route = createFileRoute('/account')({
     component: Account,
@@ -27,6 +29,20 @@ function Account() {
     const blockchain = useSelector((state: RootState) => state.blockchain);
     const address = useSelector((state: RootState) => state.auth.user?.address);
     const dispatch = useDispatch<AppDispatch>();
+
+    const linkAddressMutation = useMutation({
+        mutationFn: linkAddress,
+        onSuccess: (data) => {
+            dispatch(updateUser(data));
+        },
+    });
+
+    const unlinkAddressMutation = useMutation({
+        mutationFn: unlinkAddress,
+        onSuccess: (data) => {
+            dispatch(updateUser(data));
+        },
+    });
 
     return (
         <div className='flex-grow flex overflow-hidden'>
@@ -50,7 +66,7 @@ function Account() {
                                 <Button
                                     variant={'destructive'}
                                     onClick={() => {
-                                        dispatch(unlinkAddress());
+                                        unlinkAddressMutation.mutate();
                                     }}>
                                     Unlink Address
                                 </Button>
@@ -63,9 +79,13 @@ function Account() {
                                                     Detected: <span className='text-green-400'>{shortenAddress(blockchain.account)}</span>
                                                 </p>
 
+                                                {linkAddressMutation.error?.message && (
+                                                    <p className='text-red-500 text-center text-sm'>{linkAddressMutation.error.message}</p>
+                                                )}
+
                                                 <Button
                                                     onClick={() => {
-                                                        dispatch(linkAddress(blockchain.account));
+                                                        linkAddressMutation.mutate(blockchain.account);
                                                     }}>
                                                     Link Address
                                                 </Button>

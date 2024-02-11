@@ -1,5 +1,7 @@
 import { getPatient } from '@/api';
 import { DataTable } from '@/components/DataTable';
+import FileDeleteDialog from '@/components/Dialogs/FileDeleteDialog';
+import FileShareDialog from '@/components/Dialogs/FileShareDialog';
 import FileUploadDialog from '@/components/Dialogs/FileUploadDialog';
 import { columns } from '@/components/FileTable/columns';
 import History from '@/components/History';
@@ -9,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { RootState } from '@/redux/store';
+import { IFile } from '@/types/patient';
 import { shortenAddress } from '@/utils/shortenAddress';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -17,9 +20,7 @@ import { useMemo, useState } from 'react';
 import { BiTransfer } from 'react-icons/bi';
 import { BsPersonFillLock } from 'react-icons/bs';
 import { FaUser, FaUserInjured } from 'react-icons/fa';
-import { IoMdShareAlt } from 'react-icons/io';
 import { LuFiles } from 'react-icons/lu';
-import { MdDeleteOutline } from 'react-icons/md';
 import { VscSettings } from 'react-icons/vsc';
 import { useSelector } from 'react-redux';
 
@@ -55,8 +56,18 @@ function PatientComponent() {
         return data?.owner.address === user?.address;
     }, [data?.owner.address, user?.address]);
 
-    const selectedFiles = useMemo(() => {
-        return Object.keys(rowSelection).map((key) => data?.patient.content[Number(key)]._id);
+    const selectedFiles: IFile[] = useMemo(() => {
+        if (Object.keys(rowSelection).length === 0) return [];
+
+        const files = [];
+
+        for (const key in rowSelection) {
+            if (data?.patient.content[parseInt(key)]) {
+                files.push(data?.patient.content[parseInt(key)]);
+            }
+        }
+
+        return files;
     }, [rowSelection, data?.patient.content]);
 
     if (isLoading) {
@@ -170,16 +181,16 @@ function PatientComponent() {
                                         </div>
 
                                         <div className='flex gap-x-3'>
-                                            {selectedFiles.length > 0 && (
-                                                <>
-                                                    <Button className='bg-blue-500 hover:bg-blue-600'>
-                                                        Share <IoMdShareAlt size={20} className='ml-1' />
-                                                    </Button>
-                                                    <Button variant='destructive' onClick={() => console.log('delete')}>
-                                                        Delete <MdDeleteOutline size={20} className='ml-1' />
-                                                    </Button>
-                                                </>
-                                            )}
+                                            <FileShareDialog patient_id={patient.patient_id} files={selectedFiles} disabled={selectedFiles.length === 0} />
+                                            <FileDeleteDialog
+                                                patient_id={patient.patient_id}
+                                                files={selectedFiles}
+                                                reset={() => {
+                                                    setRowSelection({});
+                                                }}
+                                                disabled={selectedFiles.length === 0}
+                                            />
+
                                             <FileUploadDialog patient_id={patient.patient_id} />
                                         </div>
                                     </div>
