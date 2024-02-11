@@ -1,4 +1,4 @@
-import { getPatient } from '@/api';
+import { cancelAccessRequest, getPatient, requestAccess } from '@/api';
 import { DataTable } from '@/components/DataTable';
 import FileDeleteDialog from '@/components/Dialogs/FileDeleteDialog';
 import FileShareDialog from '@/components/Dialogs/FileShareDialog';
@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { RootState } from '@/redux/store';
 import { IFile } from '@/types/patient';
 import { shortenAddress } from '@/utils/shortenAddress';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useCallback, useMemo, useState } from 'react';
@@ -33,12 +33,16 @@ export const Route = createFileRoute('/patient/$patientId')({
 });
 
 function PatientComponent() {
+    const queryClient = useQueryClient();
+
     const user = useSelector((state: RootState) => state.auth.user);
     const { patientId } = Route.useParams();
 
     const { data, isLoading, isError, error } = useQuery({
         queryKey: [patientId],
         queryFn: () => getPatient(patientId),
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
     });
 
     const [rowSelection, setRowSelection] = useState({});
@@ -101,6 +105,53 @@ function PatientComponent() {
         setRowSelection({});
     }, [selectedFiles]);
 
+    const requestAccessMutation = useMutation({
+        mutationFn: () => requestAccess(patientId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [patientId] });
+        },
+    });
+
+    const cancelAccessRequestMutation = useMutation({
+        mutationFn: () => cancelAccessRequest(patientId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [patientId] });
+        },
+    });
+
+    const requestButton = useMemo(() => {
+        if (isOwner) {
+            return null;
+        }
+
+        if (data?.patient.content.length !== 0) {
+            return null;
+        }
+
+        if (user && data?.patient.accessRequests.includes(user._id!)) {
+            return (
+                <Button
+                    className='ml-5'
+                    variant={'secondary'}
+                    onClick={() => {
+                        cancelAccessRequestMutation.mutate();
+                    }}>
+                    Cancel Request
+                </Button>
+            );
+        }
+
+        return (
+            <Button
+                className='ml-5'
+                onClick={() => {
+                    requestAccessMutation.mutate();
+                }}>
+                Request Access
+            </Button>
+        );
+    }, [isOwner, data?.patient.content.length, user, data?.patient.accessRequests, requestAccessMutation, cancelAccessRequestMutation]);
+
     if (isLoading) {
         return (
             <div className='flex-grow h-full'>
@@ -125,7 +176,7 @@ function PatientComponent() {
         );
     }
 
-    const { owner, patient, sharedList } = data;
+    const { owner, patient, sharedList, accessRequests } = data;
 
     return (
         <div className='flex-grow h-full'>
@@ -169,7 +220,7 @@ function PatientComponent() {
                                         <FaUserInjured size={20} />
                                     </div>
 
-                                    {!isOwner && patient.content.length === 0 && <Button className='ml-5'>Request Access</Button>}
+                                    {requestButton}
                                 </div>
                             </CardHeader>
                             <CardContent className='grid gap-4'>
@@ -241,7 +292,7 @@ function PatientComponent() {
                             </CardContent>
                         </Card>
 
-                        {isOwner && <ManageAccess patient={patient} sharedList={sharedList}/>}
+                        {isOwner && <ManageAccess patient={patient} sharedList={sharedList} accessRequests={accessRequests} />}
                     </div>
                 </div>
             </div>

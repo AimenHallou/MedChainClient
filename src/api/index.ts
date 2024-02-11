@@ -63,7 +63,12 @@ export const getPatient = async (id: string) => {
     return api
         .get(`/patients/${id}`)
         .then((res) => {
-            return { patient: res.data.patient as IPatient, owner: res.data.owner as IUser, sharedList: res.data.sharedList as ISharedList[] };
+            return {
+                patient: res.data.patient as IPatient,
+                owner: res.data.owner as IUser,
+                sharedList: res.data.sharedList as ISharedList[],
+                accessRequests: res.data.accessRequests as IUser[],
+            };
         })
         .catch((err) => handleErrorResponse(err));
 };
@@ -105,6 +110,20 @@ export const createPatient = async (patient: z.infer<typeof addPatientFormSchema
     return api
         .post('/patients', patient)
         .then((res) => res.data.patient as IPatient)
+        .catch((err) => handleErrorResponse(err));
+};
+
+export const linkAddress = async (address: string) => {
+    return api
+        .post(`/users/linkAddress`, { address })
+        .then((res) => res.data.user as IUser)
+        .catch((err) => handleErrorResponse(err));
+};
+
+export const unlinkAddress = async () => {
+    return api
+        .post(`/users/unlinkAddress`)
+        .then((res) => res.data.user as IUser)
         .catch((err) => handleErrorResponse(err));
 };
 
@@ -157,16 +176,28 @@ export const shareFiles = async (form: z.infer<typeof shareFilesFormSchema>) => 
         .catch((err) => handleErrorResponse(err));
 };
 
-export const linkAddress = async (address: string) => {
+export const requestAccess = async (patient_id: string) => {
     return api
-        .post(`/users/linkAddress`, { address })
-        .then((res) => res.data.user as IUser)
+        .post(`/patients/${patient_id}/request-access`)
+        .then((res) => res.data.patient as IPatient)
         .catch((err) => handleErrorResponse(err));
 };
 
-export const unlinkAddress = async () => {
+export const cancelAccessRequest = async (patient_id: string) => {
     return api
-        .post(`/users/unlinkAddress`)
-        .then((res) => res.data.user as IUser)
+        .post(`/patients/${patient_id}/cancel-access-request`)
+        .then((res) => res.data.patient as IPatient)
+        .catch((err) => handleErrorResponse(err));
+};
+
+const rejectSchema = z.object({
+    patient_id: z.string(),
+    id: z.string(),
+});
+
+export const rejectAccessRequest = async (form: z.infer<typeof rejectSchema>) => {
+    return api
+        .post(`/patients/${form.patient_id}/reject-access-request`, { id: form.id })
+        .then((res) => res.data.patient as IPatient)
         .catch((err) => handleErrorResponse(err));
 };

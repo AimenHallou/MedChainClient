@@ -1,16 +1,9 @@
 import { api, setBearerToken } from '@/api';
+import { IUser } from '@/types/patient';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-export type User = {
-    username: string;
-    address?: string;
-    name?: string;
-    healthcareType?: string;
-    organizationName?: string;
-};
-
 export interface UsersState {
-    user?: User;
+    user?: IUser;
     error?: string;
     response?: string;
 }
