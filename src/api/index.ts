@@ -107,6 +107,36 @@ export const getPatients = async (page = 1, limit = 15, filter: string | null = 
         .catch((err) => handleErrorResponse(err));
 };
 
+export const getMyPatients = async (page = 1, limit = 15, filter: string | null = null, sortBy: string | null = null, sortOrder: string | null = null) => {
+    return api
+        .get('/patients/my-patients', { params: { page, limit, filter, sortBy, sortOrder } })
+        .then((res) => {
+            return {
+                patients: res.data.patients as IPatient[],
+                totalCount: res.data.totalCount as number,
+            };
+        })
+        .catch((err) => handleErrorResponse(err));
+};
+
+export const getPatientsSharedWithMe = async (
+    page = 1,
+    limit = 15,
+    filter: string | null = null,
+    sortBy: string | null = null,
+    sortOrder: string | null = null
+) => {
+    return api
+        .get('/patients/shared-with-me', { params: { page, limit, filter, sortBy, sortOrder } })
+        .then((res) => {
+            return {
+                patients: res.data.patients as IPatient[],
+                totalCount: res.data.totalCount as number,
+            };
+        })
+        .catch((err) => handleErrorResponse(err));
+};
+
 export const getPatient = async (id: string) => {
     return api
         .get(`/patients/${id}`)

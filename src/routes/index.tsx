@@ -4,6 +4,8 @@ import { createFileRoute } from '@tanstack/react-router';
 import PatientSummary from '../components/Dashboard/PatientSummary';
 import RecentPatients from '../components/Dashboard/RecentPatients';
 import AddPatientDialog from '@/components/Dashboard/AddPatientDialog';
+import MyPatientsModule from '@/components/Dashboard/MyPatientsModule';
+import PatientsSharedWithMeModule from '@/components/Dashboard/PatientSharedWithMeModule';
 
 export const Route = createFileRoute('/')({
     component: () => <Index />,
@@ -34,8 +36,12 @@ function Index() {
                         <TabsContent value='all'>
                             <AllPatientsModule />
                         </TabsContent>
-                        <TabsContent value='myPatients'>My Patients</TabsContent>
-                        <TabsContent value='sharedWithMe'>Shared with me</TabsContent>
+                        <TabsContent value='myPatients'>
+                            <MyPatientsModule />
+                        </TabsContent>
+                        <TabsContent value='sharedWithMe'>
+                            <PatientsSharedWithMeModule />
+                        </TabsContent>
                     </Tabs>
                 </div>
             </div>
