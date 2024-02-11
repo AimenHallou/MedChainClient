@@ -12,39 +12,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { login, logout, register, setAuthError } from '@/redux/slices/userSlice';
+import { logout, setAuthError, updateUser } from '@/redux/slices/userSlice';
+import { login, loginFormSchema, register, signUpFormSchema } from '@/api';
+import { useMutation } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/auth')({
     component: Auth,
     onEnter: () => {
         document.title = 'Auth | MedChain';
     },
-});
-
-const signUpFormSchema = z
-    .object({
-        username: z.string().min(2, {
-            message: 'Username must be at least 2 characters.',
-        }),
-        password: z.string().min(6, {
-            message: 'Password must be at least 6 characters.',
-        }),
-        confirmPassword: z.string().min(6, {
-            message: 'Password must be at least 6 characters.',
-        }),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-        message: "Passwords don't match",
-        path: ['confirmPassword'],
-    });
-
-const loginFormSchema = z.object({
-    username: z.string().min(2, {
-        message: 'Username must be at least 2 characters.',
-    }),
-    password: z.string().min(6, {
-        message: 'Password must be at least 6 characters.',
-    }),
 });
 
 function Auth() {
@@ -96,9 +72,7 @@ interface SignUpFormProps {
 }
 
 const SignUpForm = ({ switchRegistrationMode }: SignUpFormProps) => {
-    const error = useSelector((state: RootState) => state.auth.error);
     const dispatch = useDispatch<AppDispatch>();
-    const [isLoading, setIsLoading] = useState(false);
 
     const signUpform = useForm<z.infer<typeof signUpFormSchema>>({
         resolver: zodResolver(signUpFormSchema),
@@ -109,16 +83,15 @@ const SignUpForm = ({ switchRegistrationMode }: SignUpFormProps) => {
         },
     });
 
+    const signUpMutation = useMutation({
+        mutationFn: register,
+        onSuccess: (data) => {
+            dispatch(updateUser(data));
+        },
+    });
+
     const onSubmitSignUp = (values: z.infer<typeof signUpFormSchema>) => {
-        setIsLoading(true);
-        dispatch(setAuthError(''));
-
-        setTimeout(async () => {
-            await dispatch(register({ username: values.username, password: values.password }));
-
-            //navigate('/dashboard');
-            setIsLoading(false);
-        }, 1000);
+        signUpMutation.mutate(values);
     };
 
     return (
@@ -170,10 +143,10 @@ const SignUpForm = ({ switchRegistrationMode }: SignUpFormProps) => {
                             )}
                         />
 
-                        <p className='text-red-500 text-center text-sm'>{error}</p>
+                        {signUpMutation.error?.message && <p className='text-red-500 text-center text-sm'>{signUpMutation.error?.message}</p>}
 
                         <Button type='submit' className='w-full'>
-                            {isLoading && (
+                            {signUpMutation.isPending && (
                                 <svg className='animate-spin -ml-1 mr-3 h-5 w-5' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
                                     <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
                                     <path
@@ -203,9 +176,7 @@ interface LoginFormProps {
 }
 
 const LoginForm = ({ switchRegistrationMode }: LoginFormProps) => {
-    const error = useSelector((state: RootState) => state.auth.error);
     const dispatch = useDispatch<AppDispatch>();
-    const [isLoading, setIsLoading] = useState(false);
 
     const loginform = useForm<z.infer<typeof loginFormSchema>>({
         resolver: zodResolver(loginFormSchema),
@@ -215,16 +186,15 @@ const LoginForm = ({ switchRegistrationMode }: LoginFormProps) => {
         },
     });
 
+    const loginMutation = useMutation({
+        mutationFn: login,
+        onSuccess: (data) => {
+            dispatch(updateUser(data));
+        },
+    });
+
     const onSubmitLogin = (values: z.infer<typeof loginFormSchema>) => {
-        setIsLoading(true);
-        dispatch(setAuthError(''));
-
-        setTimeout(async () => {
-            await dispatch(login({ username: values.username, password: values.password }));
-
-            //navigate('/dashboard');
-            setIsLoading(false);
-        }, 1000);
+        loginMutation.mutate(values);
     };
 
     return (
@@ -263,10 +233,10 @@ const LoginForm = ({ switchRegistrationMode }: LoginFormProps) => {
                             )}
                         />
 
-                        <p className='text-red-500 text-center text-sm'>{error}</p>
+                        {loginMutation.error?.message && <p className='text-red-500 text-center text-sm'>{loginMutation.error?.message}</p>}
 
                         <Button type='submit' className='w-full'>
-                            {isLoading && (
+                            {loginMutation.isPending && (
                                 <svg className='animate-spin -ml-1 mr-3 h-5 w-5' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
                                     <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
                                     <path

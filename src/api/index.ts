@@ -36,6 +36,54 @@ export const getBearerToken = () => {
     return api.defaults.headers.common.Authorization;
 };
 
+export const signUpFormSchema = z
+    .object({
+        username: z.string().min(2, {
+            message: 'Username must be at least 2 characters.',
+        }),
+        password: z.string().min(6, {
+            message: 'Password must be at least 6 characters.',
+        }),
+        confirmPassword: z.string().min(6, {
+            message: 'Password must be at least 6 characters.',
+        }),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords don't match",
+        path: ['confirmPassword'],
+    });
+
+export const register = async (form: z.infer<typeof signUpFormSchema>) => {
+    return api
+        .post('/users/register', { username: form.username, password: form.password })
+        .then((res) => {
+            if (res.data.token) {
+                setBearerToken(res.data.token);
+                localStorage.setItem('token', JSON.stringify(res.data.token));
+            }
+            return res.data.user as IUser;
+        })
+        .catch((err) => handleErrorResponse(err));
+};
+
+export const loginFormSchema = z.object({
+    username: z.string(),
+    password: z.string(),
+});
+
+export const login = async (form: z.infer<typeof loginFormSchema>) => {
+    return api
+        .post('/users/login', { username: form.username, password: form.password })
+        .then((res) => {
+            if (res.data.token) {
+                setBearerToken(res.data.token);
+                localStorage.setItem('token', JSON.stringify(res.data.token));
+            }
+            return res.data.user as IUser;
+        })
+        .catch((err) => handleErrorResponse(err));
+};
+
 export const getMe = async () => {
     const token = JSON.parse(localStorage.getItem('token') || '{}');
 

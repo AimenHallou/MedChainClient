@@ -14,56 +14,11 @@ const initialState: UsersState = {
     response: '',
 };
 
-interface AuthPayload {
-    username: string;
-    password: string;
-}
-
 interface UpdatePayload {
     name?: string;
     healthcareType?: string;
     organizationName?: string;
 }
-
-export const register = createAsyncThunk('users/register', async (payload: AuthPayload, { rejectWithValue }) => {
-    try {
-        const response = await api({
-            method: 'POST',
-            url: '/users/register',
-            data: payload,
-        });
-
-        if (response.data.token) {
-            setBearerToken(response.data.token);
-            localStorage.setItem('token', JSON.stringify(response.data.token));
-        }
-
-        return response.data.user;
-    } catch (error: any) {
-        console.error(error.response.data.message);
-        return rejectWithValue(error.response.data.message);
-    }
-});
-
-export const login = createAsyncThunk('users/login', async (payload: AuthPayload, { rejectWithValue }) => {
-    try {
-        const response = await api({
-            method: 'POST',
-            url: '/users/login',
-            data: payload,
-        });
-        
-        if (response.data.token) {
-            setBearerToken(response.data.token);
-            localStorage.setItem('token', JSON.stringify(response.data.token));
-        }
-
-        return response.data.user;
-    } catch (error: any) {
-        console.error(error.response.data.message);
-        return rejectWithValue(error.response.data.message);
-    }
-});
 
 export const getMe = createAsyncThunk('users/me', async (_, { rejectWithValue }) => {
     try {
@@ -117,18 +72,6 @@ const userSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder.addCase(register.fulfilled, (state, action) => {
-            state.user = action.payload;
-        });
-        builder.addCase(register.rejected, (state, action) => {
-            state.error = (action.payload as string) || '';
-        });
-        builder.addCase(login.fulfilled, (state, action) => {
-            state.user = action.payload;
-        });
-        builder.addCase(login.rejected, (state, action) => {
-            state.error = (action.payload as string) || '';
-        });
         builder.addCase(getMe.fulfilled, (state, action) => {
             state.user = action.payload;
         });
