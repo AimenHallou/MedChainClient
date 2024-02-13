@@ -126,7 +126,7 @@ function PatientComponent() {
             return null;
         }
 
-        if (data?.patient.content.length !== 0) {
+        if (data?.patient?.content?.length !== 0) {
             return null;
         }
 
