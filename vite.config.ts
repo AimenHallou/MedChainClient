@@ -11,7 +11,7 @@ export default defineConfig({
         },
     },
     preview: {
-        port: 443,
+        port: 5000,
         strictPort: true,
     },
 });
