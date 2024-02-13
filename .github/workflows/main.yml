@@ -1,4 +1,4 @@
-name: Docker CI/CD Pipeline
+name: EC2 CI/CD Pipeline
 
 on:
   push:
