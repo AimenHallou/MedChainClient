@@ -64,7 +64,7 @@ function PatientComponent() {
     }, [data?.owner?.address, user?.address]);
 
     const selectedFiles: IFile[] = useMemo(() => {
-        if (Object.keys(rowSelection).length === 0) return [];
+        if (Object.keys(rowSelection)?.length === 0) return [];
 
         const files = [];
 
@@ -130,7 +130,7 @@ function PatientComponent() {
             return null;
         }
 
-        if (user && data?.patient.accessRequests.includes(user._id!)) {
+        if (user && data?.patient?.accessRequests?.includes(user._id!)) {
             return (
                 <Button
                     className='ml-5'
@@ -152,7 +152,7 @@ function PatientComponent() {
                 Request Access
             </Button>
         );
-    }, [isOwner, data?.patient.content.length, user, data?.patient.accessRequests, requestAccessMutation, cancelAccessRequestMutation]);
+    }, [isOwner, data?.patient?.content?.length, user, data?.patient?.accessRequests, requestAccessMutation, cancelAccessRequestMutation]);
 
     if (isLoading) {
         return (
