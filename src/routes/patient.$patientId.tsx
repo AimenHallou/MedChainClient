@@ -315,7 +315,7 @@ function PatientComponent() {
                             </CardContent>
                         </Card>
 
-                        {isOwner && <ManageAccess patient={patient} sharedList={sharedList} accessRequests={accessRequests} />}
+                        {isOwner && patient && accessRequests && <ManageAccess patient={patient} sharedList={sharedList} accessRequests={accessRequests} />}
                     </div>
                 </div>
             </div>

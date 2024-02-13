@@ -18,11 +18,27 @@ const MyPatientsModule = () => {
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState('-1');
 
-    const { data, isLoading: patientIsLoading } = useQuery({
+    const { data, isLoading: patientIsLoading, isError } = useQuery({
         queryKey: ['myPatients', pagination.page, pagination.limit, filter, sortBy, sortOrder],
         queryFn: () => getMyPatients(pagination.page, pagination.limit, filter, sortBy, sortOrder),
         retry: 1,
     });
+
+    if (patientIsLoading) {
+        return (
+          <div>
+            <p>Loading</p>
+          </div>
+        );
+      }
+    
+        if (isError) {
+            return (
+            <div>
+                <p>Error</p>
+            </div>
+            );
+        }
 
     return (
         <Card>
@@ -78,11 +94,11 @@ const MyPatientsModule = () => {
                 <div className='grid grid-cols-3 gap-3'>
                     {patientIsLoading && Array.from({ length: 6 }).map((_, i) => <PatientCardSkeleton key={i} />)}
 
-                    {data?.patients.map((patient) => {
+                    {data?.patients?.map((patient) => {
                         return <PatientCard key={patient.patient_id} patient={patient} />;
                     })}
 
-                    {!patientIsLoading && data?.patients.length === 0 && (
+                    {!patientIsLoading && data?.patients?.length === 0 && (
                         <div className='col-span-3 flex justify-center items-center'>
                             <p className='text-muted-foreground'>No patients found</p>
                         </div>
