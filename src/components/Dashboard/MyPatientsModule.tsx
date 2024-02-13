@@ -18,7 +18,7 @@ const MyPatientsModule = () => {
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState('-1');
 
-    const { data, isLoading: patientIsLoading, isError } = useQuery({
+    const { data, isLoading: patientIsLoading, isError, error } = useQuery({
         queryKey: ['myPatients', pagination.page, pagination.limit, filter, sortBy, sortOrder],
         queryFn: () => getMyPatients(pagination.page, pagination.limit, filter, sortBy, sortOrder),
         retry: 1,
@@ -32,13 +32,13 @@ const MyPatientsModule = () => {
         );
       }
     
-        if (isError) {
-            return (
-            <div>
-                <p>Error</p>
-            </div>
-            );
-        }
+    if (isError) {
+        return (
+        <div>
+            <p>{error.message}</p>
+        </div>
+        );
+    }
 
     return (
         <Card>

@@ -60,6 +60,10 @@ function PatientComponent() {
     });
 
     const isOwner = useMemo(() => {
+        if(!data?.owner ){
+            return false
+        }
+
         return data?.owner?.address === user?.address;
     }, [data?.owner?.address, user?.address]);
 

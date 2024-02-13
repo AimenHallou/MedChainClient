@@ -34,7 +34,7 @@ const AllPatientsModule = () => {
   const {
     data,
     isLoading: patientIsLoading,
-    isError,
+    isError,error
   } = useQuery({
     queryKey: [
       "patients",
@@ -56,13 +56,13 @@ const AllPatientsModule = () => {
     );
   }
 
-    if (isError) {
-        return (
-        <div>
-            <p>Error</p>
-        </div>
-        );
-    }
+  if (isError) {
+    return (
+    <div>
+        <p>{error.message}</p>
+    </div>
+    );
+}
 
   return (
     <Card>
