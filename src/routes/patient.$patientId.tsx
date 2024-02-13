@@ -64,6 +64,10 @@ function PatientComponent() {
     }, [data?.owner?.address, user?.address]);
 
     const selectedFiles: IFile[] = useMemo(() => {
+        if(isError || isLoading) {
+            return [];
+        }
+
         if (Object.keys(rowSelection)?.length === 0) return [];
 
         const files = [];
@@ -122,6 +126,10 @@ function PatientComponent() {
     });
 
     const requestButton = useMemo(() => {
+        if(isError || isLoading) {
+            return null;
+        }
+
         if (isOwner) {
             return null;
         }
