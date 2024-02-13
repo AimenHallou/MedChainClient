@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 // Create an Axios instance with a custom config
 export const api: AxiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_URL as string || '/api/v1' ,
+    baseURL: import.meta.env.VITE_API_URL as string ,
     timeout: 5000,
     headers: {
         'Content-Type': 'application/json',
