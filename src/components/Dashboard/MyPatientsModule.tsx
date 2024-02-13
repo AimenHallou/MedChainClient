@@ -21,6 +21,7 @@ const MyPatientsModule = () => {
     const { data, isLoading: patientIsLoading } = useQuery({
         queryKey: ['myPatients', pagination.page, pagination.limit, filter, sortBy, sortOrder],
         queryFn: () => getMyPatients(pagination.page, pagination.limit, filter, sortBy, sortOrder),
+        retry: 1,
     });
 
     return (

@@ -21,6 +21,7 @@ const PatientsSharedWithMeModule = () => {
     const { data, isLoading: patientIsLoading } = useQuery({
         queryKey: ['patientsSharedWithMe', pagination.page, pagination.limit, filter, sortBy, sortOrder],
         queryFn: () => getPatientsSharedWithMe(pagination.page, pagination.limit, filter, sortBy, sortOrder),
+        retry: 1,
     });
 
     return (

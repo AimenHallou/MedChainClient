@@ -44,6 +44,7 @@ function PatientComponent() {
         queryFn: () => getPatient(patientId),
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
+        retry: 2
     });
 
     const [rowSelection, setRowSelection] = useState({});
