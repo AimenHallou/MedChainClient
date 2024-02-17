@@ -10,6 +10,7 @@ const RecentPatients = ({ ...rest }: Props) => {
     const { data: recentPatients, isLoading } = useQuery({
         queryKey: ['recentPatients'],
         queryFn: () => getRecentPatients(3),
+        retry: 1,
     });
 
     return (

@@ -6,11 +6,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { RootState } from '@/redux/store';
 import { FileData } from '@/types/file';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
@@ -19,6 +22,9 @@ const dataTypes = ['Lab results', 'Medical images', 'Medication history', 'Clini
 interface Props extends React.HTMLAttributes<HTMLButtonElement> {}
 
 const AddPatientDialog = ({ ...rest }: Props) => {
+    const user = useSelector((state: RootState) => state.auth.user);
+    const navigate = useNavigate();
+
     const queryClient = useQueryClient();
 
     const [addPatientDialogOpen, setAddPatientDialogOpen] = useState(false);
@@ -90,6 +96,11 @@ const AddPatientDialog = ({ ...rest }: Props) => {
                 <Button
                     {...rest}
                     onClick={() => {
+                        if (!user) {
+                            navigate({ to: '/auth' });
+                            return;
+                        }
+
                         addPatientMutation.reset();
                         addPatientForm.reset();
                         setAddPatientDialogOpen(true);

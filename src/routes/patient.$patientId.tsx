@@ -19,7 +19,7 @@ import { shortenAddress } from '@/utils/shortenAddress';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import { FaUser, FaUserInjured } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
 import { LuFiles } from 'react-icons/lu';
@@ -44,7 +44,7 @@ function PatientComponent() {
         queryFn: () => getPatient(patientId),
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
-        retry: 2
+        retry: 2,
     });
 
     const [rowSelection, setRowSelection] = useState({});
@@ -60,15 +60,15 @@ function PatientComponent() {
     });
 
     const isOwner = useMemo(() => {
-        if(!data?.owner ){
-            return false
+        if (!data?.owner) {
+            return false;
         }
 
-        return data?.owner?.address === user?.address;
-    }, [data?.owner?.address, user?.address]);
+        return data?.owner?._id === user?._id;
+    }, [data?.owner, user?._id]);
 
     const selectedFiles: IFile[] = useMemo(() => {
-        if(isError || isLoading) {
+        if (isError || isLoading) {
             return [];
         }
 
@@ -83,7 +83,7 @@ function PatientComponent() {
         }
 
         return files;
-    }, [rowSelection, data?.patient?.content]);
+    }, [rowSelection, data?.patient?.content, isError, isLoading]);
 
     const handleOnDownload = useCallback(() => {
         const download = (base64: string, name: string) => {
@@ -130,7 +130,7 @@ function PatientComponent() {
     });
 
     const requestButton = useMemo(() => {
-        if(isError || isLoading) {
+        if (isError || isLoading) {
             return null;
         }
 
@@ -164,7 +164,11 @@ function PatientComponent() {
                 Request Access
             </Button>
         );
-    }, [isOwner, data?.patient?.content?.length, user, data?.patient?.accessRequests, requestAccessMutation, cancelAccessRequestMutation]);
+    }, [isOwner, data?.patient?.content?.length, user, data?.patient?.accessRequests, requestAccessMutation, cancelAccessRequestMutation, isError, isLoading]);
+
+    useEffect(() => {
+        console.log(data?.patient.content);
+    }, [data?.patient?.content]);
 
     if (isLoading) {
         return (
