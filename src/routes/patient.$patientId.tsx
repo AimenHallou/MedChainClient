@@ -26,7 +26,6 @@ import { LuFiles } from 'react-icons/lu';
 import { useSelector } from 'react-redux';
 
 export const Route = createFileRoute('/patient/$patientId')({
-    // Or in a component
     component: PatientComponent,
     onEnter: ({ params }) => {
         document.title = `${params.patientId} | MedChain`;
@@ -248,6 +247,11 @@ function PatientComponent() {
                                 <div className='flex gap-x-3'>
                                     <Badge variant='outline'>ID</Badge>
                                     <p className='text-sm'>{patient.patient_id}</p>
+                                </div>
+
+                                <div className='flex gap-x-3'>
+                                    <Badge variant='outline'>Blockchain Patient</Badge>
+                                    <p className='text-sm'>{patient.isBlockchainPatient ? 'Yes' : 'No'}</p>
                                 </div>
 
                                 <p className='text-sm text-muted-foreground'>Created on {new Date(patient.createdAt).toLocaleString()}</p>

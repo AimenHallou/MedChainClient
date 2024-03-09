@@ -41,6 +41,7 @@ export interface IPatient {
     sharedWith: Map<string, string[]>;
     history: IHistoryEvent[];
     accessRequests: string[];
+    isBlockchainPatient: boolean;
 }
 
 export interface IUser {
