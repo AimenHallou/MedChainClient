@@ -11,7 +11,6 @@ const store = configureStore({
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {
-                // Ignore certain paths from the serialization check
                 ignoredPaths: ['blockchain.web3'],
             },
         }),

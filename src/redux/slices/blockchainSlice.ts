@@ -75,6 +75,7 @@ export const checkConnection = createAsyncThunk('blockchain/checkConnection', as
 
         ethereum.on('accountsChanged', (code) => {
             const newAccount = (code as string[])[0];
+            console.log('newAccount:', newAccount);
 
             if (newAccount) {
                 dispatch(updateAccount(newAccount));
